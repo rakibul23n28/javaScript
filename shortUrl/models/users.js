@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    lastNmae:{
+    lastName:{
         type: String,
         required: true
     },
@@ -18,11 +18,7 @@ const userSchema = new mongoose.Schema({
         required: true,
         unicke: true
     },
-    role:{
-        type: String,
-        enum: ["admin", "user"],
-        default: "user"
-    }
+
 },{timestamps: true});
 
 module.exports = mongoose.model("user",userSchema)

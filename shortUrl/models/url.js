@@ -8,10 +8,14 @@ const urlSchema = new mongoose.Schema({
     },
     redirectUrl : {
         type: String,
+        unique: false,
         required: true,
-        unique: true
     },
-    visitHistory : [{ timestamp: {type:Number} }]
+    visitHistory : [{ timestamp: {type:Number} }],
+    createdBy : {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user"
+    }
 },{timestamps: true});
 
 const URL = mongoose.model("url",urlSchema);

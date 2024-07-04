@@ -13,14 +13,10 @@ async function handleGenerateNewShortId(req, res) {
     await URL.create({
         shortId : shortID,
         redirectUrl : body.url,
-        visitHistory : []
+        visitHistory : [],
+        createdBy : req.user._id
     });
-
-    res.render('home', {
-        title: 'Home',
-        id: shortID,
-        urls: await URL.find(),
-    });
+    res.redirect('/');
 }
 async function handleGetShortUrl(req, res) {
     const shortId = req.params.shortId;
