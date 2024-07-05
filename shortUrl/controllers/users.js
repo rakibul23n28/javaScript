@@ -35,9 +35,8 @@ async function handleLogin(req, res) {
                     massage: "password is wrong"
                 });
             }else {
-                const sessioId = uuidv4();
-                setUser(sessioId, user);
-                res.cookie('uid', sessioId);
+                const token = setUser(user);
+                res.cookie('uid', token);
                 res.redirect('/');
             }
         }
