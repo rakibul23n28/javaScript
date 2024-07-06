@@ -5,11 +5,11 @@ const urlRouter = require("./routes/url");
 const homeRouter = require("./routes/staticRoute");
 const userRouter = require("./routes/users");
 const {connectToMongoDB} = require("./connection");
-const {restrictToLoggedInUserOnly,checkAuth} = require("./middlewares/auth");
+const {checkForAuthentication,restrictTo} = require("./middlewares/auth");
 
 const app = express();
 const port = 3000;
-const host = '192.168.0.112';
+const host = 'localhost';
 
 app.set('view engine', 'ejs');
 app.set('views', './views');
@@ -17,10 +17,11 @@ app.set('views', './views');
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.json());
+app.use(checkForAuthentication);
 
 app.use('/user', userRouter);
-app.use('/url',restrictToLoggedInUserOnly, urlRouter);
-app.use('/',checkAuth, homeRouter);
+app.use('/url',restrictTo(['NORMAL','ADMIN']), urlRouter);
+app.use('/', homeRouter);
 
 connectToMongoDB("mongodb://localhost:27017/shortUrl")
     .then(() => {

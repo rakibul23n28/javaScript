@@ -18,6 +18,11 @@ const userSchema = new mongoose.Schema({
         required: true,
         unicke: true
     },
+    role: {
+        type: String,
+        required: true,
+        default:"NORMAL"
+    }
 
 },{timestamps: true});
 

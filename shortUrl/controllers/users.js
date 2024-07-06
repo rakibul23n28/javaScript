@@ -1,5 +1,4 @@
 const User = require('../models/users');
-const {v4: uuidv4} = require("uuid");
 const {setUser,getUser} = require('../service/auth');
 
 async function handleRegister(req, res) {

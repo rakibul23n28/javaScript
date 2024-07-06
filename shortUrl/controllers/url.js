@@ -16,12 +16,7 @@ async function handleGenerateNewShortId(req, res) {
         visitHistory : [],
         createdBy : req.user._id
     });
-    // res.redirect('/');
-    res.render('home',{
-        id: shortID,
-        title: 'Home',
-        urls: await URL.find({createdBy: req.user._id}),
-    })
+    res.redirect('/');
 }
 async function handleGetShortUrl(req, res) {
     const shortId = req.params.shortId;
