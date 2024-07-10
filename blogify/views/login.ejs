@@ -1,0 +1,13 @@
+<%- include("./partials/header", { title }) -%>
+<body>
+
+  <form class="space-y-4 font-[sans-serif] text-[#333] max-w-md mx-auto" action="/login" method="POST">
+      <input type="email" name="email" id="email" placeholder="Email" class="w-full">
+      <input type="password" name="password" id="password" placeholder="Password" class="w-full">
+
+      <button type="submit"
+        class="px-6 py-2.5 w-full !mt-8 text-sm bg-[#007bff] hover:bg-blue-600 text-white rounded active:bg-[#006bff]">Submit</button>
+    </form>
+
+</body>
+</html>
