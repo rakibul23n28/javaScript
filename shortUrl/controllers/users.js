@@ -10,7 +10,7 @@ async function handleRegister(req, res) {
         });
     }else {
         await User.create(body);
-        res.redirect('/');
+        res.redirect('/login');
     }
 }
 async function handleLogin(req, res) {
