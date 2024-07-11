@@ -10,6 +10,7 @@ router.get('/',restrictTo(['NORMAL','ADMIN']),async (req, res) =>{
         id:id,
         title: 'Home',
         urls: urls,
+        user: req.user
     });
 });
 router.get('/signup',redirectIfAuthenticated,(req, res) =>{
