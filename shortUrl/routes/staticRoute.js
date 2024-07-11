@@ -1,5 +1,5 @@
 const express = require('express');
-const {restrictTo} = require("../middlewares/auth")
+const {restrictTo,redirectIfAuthenticated} = require("../middlewares/auth")
 const URL = require('../models/url');
 const router = express.Router();
 
@@ -12,16 +12,15 @@ router.get('/',restrictTo(['NORMAL','ADMIN']),async (req, res) =>{
         urls: urls,
     });
 });
-router.get('/signup',(req, res) =>{
-    res.render('signup');
-});
-router.get('/login',(req, res) =>{
-    res.render('login');
-});
-router.get('/admin/urls',restrictTo(['ADMIN']),async (req, res) =>{
-    res.render('home',{
-        title: 'Admin | Urls',
-        urls: await URL.find({}),
+router.get('/signup',redirectIfAuthenticated,(req, res) =>{
+    res.render('signup',{
+        title: 'Sign Up'
     });
 });
+router.get('/login',redirectIfAuthenticated,(req, res) =>{
+    res.render('login',{
+        title: 'Login'
+    });
+});
+
 module.exports = router;

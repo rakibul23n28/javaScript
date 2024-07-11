@@ -42,7 +42,13 @@ async function handleLogin(req, res) {
     }
 }
 
+async function handleLogout(req, res) {
+    res.clearCookie('uid');
+    res.redirect('/login');
+}
+
 module.exports = {
     handleRegister,
-    handleLogin
+    handleLogin,
+    handleLogout,
 }

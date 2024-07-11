@@ -48,8 +48,22 @@ async function handleGetAnalytics(req, res) {
     });
 }
 
+async function handleDeleteUrl(req, res) {
+    const shortId = req.params.shortId;
+    const url = await URL.findOneAndDelete({shortId: shortId});
+    if(!url) {
+        return res.status(400).json({
+            status: 400,
+            massage: "short id do not exist"
+        });
+    }
+    return res.redirect('/');
+}
+
 module.exports = {
     handleGenerateNewShortId,
     handleGetShortUrl,
     handleGetAnalytics,
+    handleDeleteUrl,
+
 }

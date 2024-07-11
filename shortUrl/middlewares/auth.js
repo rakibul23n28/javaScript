@@ -23,5 +23,16 @@ function restrictTo(roles = []){
         return next()
     };
 }
+function redirectIfAuthenticated(req, res, next) {
+    if (req.user) {
+        return res.redirect('/');
+    }
+    next();
+}
 
-module.exports = {checkForAuthentication, restrictTo}
+
+module.exports = {
+    checkForAuthentication,
+    restrictTo,
+    redirectIfAuthenticated,
+}
