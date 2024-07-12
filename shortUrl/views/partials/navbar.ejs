@@ -5,8 +5,8 @@
     <% if (title !== 'Login' && title !== 'Sign Up') { %>
         <div class="flex gap-7">
             <% if (user.role === 'ADMIN') { %>
-                <a href="/admin/users"> <button class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">Admin Users</button></a>
-                <a href="/admin/urls"> <button class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">Admin Urls</button></a>
+                <a href="/admin/users"> <button class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">Users</button></a>
+                <a href="/admin/urls"> <button class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">Urls</button></a>
             <% } %>
             <a href="/user/logout"> <button onclick="return confirm('Are you want to Log out?')" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Log out</button></a>
         </div>
