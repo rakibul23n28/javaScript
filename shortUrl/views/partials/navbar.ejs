@@ -1,10 +1,15 @@
 
-<div class="flex flex-row justify-between mx-16 mt-10 mb-10 items-center">
-    <div class=" font-extrabold text-6xl">LO <span class="text-red-500">GO</span>
-    </div>
+<div class="flex flex-row justify-between mx-16 mt-10 mb-6 items-center">
+    <a href="/"><div class=" font-extrabold text-6xl">LO <span class="text-red-500">GO</span>
+    </div></a>
     <% if (title !== 'Login' && title !== 'Sign Up') { %>
-     
-        <a href="/user/logout"> <button onclick="return confirm('Are you want to Log out?')" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Log out</button></a>
+        <div class="flex gap-7">
+            <% if (user.role === 'ADMIN') { %>
+                <a href="/admin/users"> <button class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">Admin Users</button></a>
+                <a href="/admin/urls"> <button class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">Admin Urls</button></a>
+            <% } %>
+            <a href="/user/logout"> <button onclick="return confirm('Are you want to Log out?')" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Log out</button></a>
+        </div>
     <% } %>
     <% if (title ==="Login") { %>
 

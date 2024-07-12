@@ -3,9 +3,11 @@
     <!-- justify-between -->
     <%- include("./partials/navbar", { title }) -%>
 
+    <h1 class="text-6xl text-center text-black mb-4">All Users Urls</h1>
+    <hr class="border-t-2 border-black-[0.5] my-8 m-10">
 
-      <div class="relative overflow-x-auto shadow-md sm:rounded-lg mx-16 mb-16">
-        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+      <div class="relative overflow-x-auto shadow-sm sm:rounded-lg mx-16 mb-16">
+        <table class="w-full text-sm text-center rtl:text-right text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     <th scope="col" class="px-6 py-3">
@@ -44,7 +46,7 @@
                     </td>
                     <td class="px-6 py-4">
                         <a href="/admin/url/delete/<%= url.shortId %>" class="text-red-500 hover:text-red-800">
-                            <button onclick="return confirm('Are you want to delete?')" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Delete</button>
+                            <button onclick="return confirm('Are you want to delete?')" class=" text-red-500 hover:text-red-700 font-bold py-2 px-4 rounded">Delete</button>
                         </a>
                     </td>
                  </tr>
@@ -54,7 +56,7 @@
       </div>
 
     </div>
-
+    <%- include("./partials/footer") %>
     
   </body>
 </html>

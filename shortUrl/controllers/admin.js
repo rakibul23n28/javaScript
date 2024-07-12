@@ -4,15 +4,18 @@ const User = require('../models/users');
 async function handleAllUrls(req, res) {
     const urls = await URL.find().lean();
     const users = await User.find().lean();
+    const user = req.user;
     res.render('adminurls', {
         title: 'Admin | Urls',
         urls: urls,
-        users: users
+        users: users,
+        user: user
     });
 }
 async function handleAllUsers(req, res) {
     const users = await User.find().lean();
     const urls = await URL.find().lean();
+    const user = req.user;
     const countUrls = urls.reduce((map,url)=>{
         map[url.createdBy] = (map[url.createdBy] || 0) + 1;
         return map
@@ -20,16 +23,17 @@ async function handleAllUsers(req, res) {
     res.render('users', {
         title: 'Admin | Users',
         users: users,
-        countUrls: countUrls
+        countUrls: countUrls,
+        user: user
     });
 }
 async function handleDeleteUsers(req, res) {
     const id = req.params.id;
-    await URL.deleteMany({createdBy: id});
     const u = await User.findOne({ _id: id });  
     if( u.role == 'ADMIN') {
         return res.redirect('/admin/users');
     }
+    await URL.deleteMany({createdBy: id});
     await User.findByIdAndDelete(id);
 
     res.redirect('/admin/users');
