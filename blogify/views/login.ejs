@@ -2,7 +2,7 @@
 <body>
     <%- include("./partials/navbar") -%>
     
-    <form class="max-w-sm mx-auto bg-white p-8 shadow-lg rounded-lg" action="/login" method="POST">
+    <form class="max-w-sm mx-auto bg-white p-8 shadow-lg rounded-lg" action="/user/login" method="POST">
       <% if (locals.error) { %>
         <div class="p-1 rounded-sm text-center underline text-red-700 font-bold"><%= locals.error %></div>
       <% } %>
