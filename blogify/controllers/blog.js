@@ -11,18 +11,35 @@ async function handleNewAddedBlog(req,res){
 
     const imageUrl = `/uploads/${req.file?.filename}`;
 
-    console.log(imageUrl);
     await Blog.create({
         title: title,
         body: body,
-        createdBy: req.user_id,
+        createdBy: req.user._id,
         coverImageURL: imageUrl
     })
-    res.json(await Blog.find());
+    res.redirect('/');
 }
+async function BlogRenderByID(req, res) {
+    try {
+        const id = req.params.blogID;
+        const blog = await Blog.findById(id).populate('createdBy').exec();
 
+        if (!blog) {
+            return res.status(404).send('Blog not found');
+        }
+
+        res.render('bloginfo', {
+            title: `Blog ${blog.title}`,
+            blog: blog,
+            user:req.user
+        });
+    } catch (err) {
+        res.redirect('/');
+    }
+}
 
 module.exports = {
     blogAddNew,
     handleNewAddedBlog,
+    BlogRenderByID,
 }

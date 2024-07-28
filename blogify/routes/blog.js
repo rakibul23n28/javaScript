@@ -1,7 +1,7 @@
 const multer  = require('multer');
 const path = require('path');
 const {Router} = require('express');
-const {blogAddNew,handleNewAddedBlog} = require('../controllers/blog')
+const {blogAddNew,handleNewAddedBlog,BlogRenderByID} = require('../controllers/blog')
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -16,6 +16,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 const router = Router();
 router.get('/add-new',blogAddNew);
-router.post('/add-new',upload.single('coverImage'),handleNewAddedBlog);
+router.post('/add',upload.single('coverImage'),handleNewAddedBlog);
+router.get('/:blogID',BlogRenderByID);
+
+
 
 module.exports = router;

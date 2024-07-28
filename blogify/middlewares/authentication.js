@@ -11,7 +11,6 @@ function checkForAuthentication(cookieName){
             req.user = payload;
         }
         catch(err){
-            console.log("llll");
         }
         return next();
 
@@ -25,7 +24,15 @@ function redirectIfAuthenticate(req,res,next){
     return next();
 }
 
+function checkAuthenticate(req,res,next){
+    if(req.user){
+       return next()
+    }else{
+        return res.redirect('/login')
+    }
+}
 module.exports = {
     checkForAuthentication,
-    redirectIfAuthenticate
+    redirectIfAuthenticate,
+    checkAuthenticate
 }
