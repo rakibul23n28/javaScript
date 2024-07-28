@@ -1,0 +1,34 @@
+
+<div class="flex flex-row justify-between text-1xl py-6 px-10 items-center">
+
+    <div class="flex items-center gap-0 justify-center text-3xl">
+
+        <a href="/" class="rounded-full bg-red-500 h-10 w-10 text-white text-center">Fy</a>
+        <% if (locals.user) { %>
+            <a href="/" class="text-end font-medium "><%= user.name %></a>
+         
+        <% } %>
+    </div>
+    <div class="flex items-center gap-12 justify-centertext-2xl">
+        <a href="#">Blog</a>
+        <a href="#">About Us</a>
+        <a href="#">Contact</a>
+    </div>
+    
+    <% if (locals.user) { %>
+        <div class="flex gap-7">
+            <% if (user.role === 'ADMIN') { %>
+                <a href="/admin/users"> <button class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">Users</button></a>
+                <a href="/admin/urls"> <button class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">Urls</button></a>
+            <% } %>
+            <a href="/logout"> <button onclick="return confirm('Are you want to Log out?')" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Log out</button></a>
+        </div>
+    <% } 
+    else { %>
+        <div class="flex items-center gap-1 justify-centertext-2xl">
+                <a href="/signup"> <button class="border hover:bg-slate-300 font-bold py-2 px-4 rounded">Sign Up</button> </a>
+                <a href="/login"><button class="border hover:bg-slate-300 font-bold py-2 px-4 rounded">Login</button></a>
+        </div>
+    <% } %>
+     
+ </div>

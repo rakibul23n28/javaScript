@@ -27,7 +27,9 @@ $ npm run devcss
 ```
 
 For accessing admin page you need to do update a user role NORMAL TO ADMIN:
-follow the processL
+
+follow the process--
+
 go cmd/terminal
 
 activate mongodb-
