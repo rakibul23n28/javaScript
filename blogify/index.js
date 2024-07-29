@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
 
 
-const {checkForAuthentication,checkAuthenticate} = require('./middlewares/authentication');
+const {checkForAuthentication} = require('./middlewares/authentication');
 
 const staticRoute = require('./routes/staticRouter');
 const authenticationRoute = require('./routes/authentication');
@@ -26,7 +26,7 @@ app.use(express.static(path.join(__dirname,'public')));
 app.set("view engine", "ejs");
 app.set('views', path.join(__dirname, 'views'));
 
-app.use('/blog',checkAuthenticate,blogRoute);
+app.use('/blog',blogRoute);
 app.use('/user', authenticationRoute);
 app.use('/', staticRoute);
 

@@ -1,7 +1,8 @@
 const multer  = require('multer');
 const path = require('path');
 const {Router} = require('express');
-const {blogAddNew,handleNewAddedBlog,BlogRenderByID} = require('../controllers/blog')
+const {blogAddNew,handleNewAddedBlog,BlogRenderByID,postCommentSave} = require('../controllers/blog')
+const {checkAuthenticate} = require('../middlewares/authentication');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -15,9 +16,10 @@ const storage = multer.diskStorage({
   
 const upload = multer({ storage: storage })
 const router = Router();
-router.get('/add-new',blogAddNew);
+router.get('/add-new',checkAuthenticate,blogAddNew);
 router.post('/add',upload.single('coverImage'),handleNewAddedBlog);
 router.get('/:blogID',BlogRenderByID);
+router.post('/comment/:blogID',postCommentSave);
 
 
 
