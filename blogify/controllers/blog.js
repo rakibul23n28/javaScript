@@ -28,7 +28,7 @@ async function handleNewAddedBlog(req, res) {
 
     // Sort fields by order before saving
     fields.sort((a, b) => a.order - b.order);
-
+    
     // Remove the order property from the fields
     const sortedFields = fields.map(({ key, value }) => ({ key, value }));
 
@@ -46,6 +46,7 @@ async function handleNewAddedBlog(req, res) {
         res.status(500).send('Error saving blog');
     }
 }
+
 
 
 async function BlogRenderByID(req, res) {

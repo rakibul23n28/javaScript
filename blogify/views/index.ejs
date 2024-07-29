@@ -1,15 +1,22 @@
-<%- include("./partials/header") -%>
+<%- include("./partials/header") %>
 <body>
-    <%- include("./partials/navbar") -%>
+    <%- include("./partials/navbar") %>
     <div class="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-4 mx-40 my-10">
         <% blogs.forEach(blog => { %>
             <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                <a href="#">
-                    <img class="rounded-t-lg" src="<%= blog.coverImageURL %>" alt="" />
+                <a href="/blog/<%= blog._id %>">
+                    <% 
+                    // Find the coverImageURL and title from the fields array
+                    const coverImageURL = blog.fields.find(field => field.key === 'coverImageURL')?.value || '';
+                    const title = blog.fields.find(field => field.key === 'title')?.value || '';
+                    %>
+                    <% if (coverImageURL) { %>
+                        <img class="rounded-t-lg" src="<%= coverImageURL %>" alt="Cover Image" />
+                    <% } %>
                 </a>
                 <div class="p-5">
-                    <a href="#">
-                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"><%= blog.title %></h5>
+                    <a href="/blog/<%= blog._id %>">
+                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"><%= title %></h5>
                     </a>
                     <a href="/blog/<%= blog._id %>" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                         Read more
