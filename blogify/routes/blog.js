@@ -14,12 +14,13 @@ const storage = multer.diskStorage({
     }
   })
   
-const upload = multer({ storage: storage })
+  const upload = multer({ storage: storage }).array('coverImage'); 
 const router = Router();
 router.get('/add-new',checkAuthenticate,blogAddNew);
-router.post('/add',upload.single('coverImage'),handleNewAddedBlog);
+router.post('/add',upload,handleNewAddedBlog);
 router.get('/:blogID',BlogRenderByID);
 router.post('/comment/:blogID',postCommentSave);
+
 
 
 

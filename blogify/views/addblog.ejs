@@ -1,27 +1,84 @@
 <%- include("./partials/header") %>
 <body>
     <%- include("./partials/navbar") %>
+
+    <!-- Buttons to add fields -->
+    <div class="mx-60">
+        <button type="button" onclick="addTitle()" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5">Add Title</button>
+        <button type="button" onclick="addDescription()" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5">Add Description</button>
+        <button type="button" onclick="addCopyFieldForTextOrCode()" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5">Add Copy Field</button>
+        <button type="button" onclick="addCoverImageURL()" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5">Add Cover Image</button>
+    </div>
     
-    <form class="mx-60  bg-white p-8 s" action="/blog/add" method="POST" enctype="multipart/form-data">
-      
-        <div class="mb-5">
-            <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
-            <input name="title" type="text" id="title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-        </div>
-        <div class="mb-5">
-            <label for="body" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Descreption</label>
-            <textarea name="body" type="text" id="body" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required ></textarea>
-        </div>
-        
-        <div class="mb-5">
-            
-            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="default_size">Cover Image</label>
-            <input required name="coverImage" class="block w-full mb-5 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="default_size" type="file">
+    <!-- Form where fields will be added -->
+    <form id="add-container" class="mx-60 bg-white p-8 space-y-4" action="/blog/add" method="POST" enctype="multipart/form-data">
+        <!-- Form fields will be dynamically added here -->
 
-        </div> 
-
-        <button type="submit" class="mt-6 w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+        <button type="submit" class="mt-6 w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Submit</button>
     </form>
+
     <%- include("./partials/footer") %>
+    
+    <script>
+        const parent = document.getElementById('add-container');
+        let fieldOrder = 1; // Start with 1 or any initial value
+    
+        function addTitle() {
+            const newTitle = document.createElement('input');
+            newTitle.type = 'text';
+            newTitle.name = 'title[]';
+            newTitle.id = `field-${fieldOrder}`;
+            newTitle.dataset.order = fieldOrder++;
+            newTitle.placeholder = 'Title';
+            newTitle.className = 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5';
+            newTitle.required = true; // Set the required attribute
+            parent.insertBefore(newTitle, parent.querySelector('button[type="submit"]'));
+            addOrderField(newTitle.dataset.order, 'title');
+        }
+    
+        function addDescription() {
+            const newDescription = document.createElement('textarea');
+            newDescription.name = 'description[]';
+            newDescription.id = `field-${fieldOrder}`;
+            newDescription.dataset.order = fieldOrder++;
+            newDescription.placeholder = 'Description';
+            newDescription.className = 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5';
+            newDescription.required = true; // Set the required attribute
+            parent.insertBefore(newDescription, parent.querySelector('button[type="submit"]'));
+            addOrderField(newDescription.dataset.order, 'description');
+        }
+    
+        function addCopyFieldForTextOrCode() {
+            const newCopyField = document.createElement('textarea');
+            newCopyField.name = 'CopyFileidFortextORCode[]';
+            newCopyField.id = `field-${fieldOrder}`;
+            newCopyField.dataset.order = fieldOrder++;
+            newCopyField.placeholder = 'Copy File ID for Text or Code';
+            newCopyField.className = 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5';;
+            newCopyField.required = true; // Set the required attribute
+            parent.insertBefore(newCopyField, parent.querySelector('button[type="submit"]'));
+            addOrderField(newCopyField.dataset.order, 'CopyFileidFortextORCode');
+        }
+    
+        function addCoverImageURL() {
+            const newCoverImage = document.createElement('input');
+            newCoverImage.type = 'file';
+            newCoverImage.name = 'coverImage';
+            newCoverImage.id = `field-${fieldOrder}`;
+            newCoverImage.dataset.order = fieldOrder++;
+            newCoverImage.className = 'block w-full mb-5 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50';
+            newCoverImage.required = true; // Set the required attribute
+            parent.insertBefore(newCoverImage, parent.querySelector('button[type="submit"]'));
+            addOrderField(newCoverImage.dataset.order, 'coverImage');
+        }
+    
+        function addOrderField(order, name) {
+            const hiddenOrderField = document.createElement('input');
+            hiddenOrderField.type = 'hidden';
+            hiddenOrderField.name = `${name}_order[]`;
+            hiddenOrderField.value = order;
+            parent.insertBefore(hiddenOrderField, parent.querySelector('button[type="submit"]'));
+        }
+    </script>
 </body>
 </html>

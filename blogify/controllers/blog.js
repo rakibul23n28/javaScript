@@ -9,23 +9,44 @@ function blogAddNew(req, res) {
 }
 
 async function handleNewAddedBlog(req, res) {
+    const { title = [], description = [], CopyFileidFortextORCode = [] } = req.body;
+    const coverImageURLs = req.files ? req.files.map(file => `/uploads/${file?.filename}`) : [];
+
+    // Create arrays for orders
+    const titleOrders = req.body.title_order;
+    const descriptionOrders = req.body.description_order;
+    const CopyFileidFortextORCodeOrders = req.body.CopyFileidFortextORCode_order;
+    const coverImageOrders = req.body.coverImage_order;
+
+    // Create an array of fields with their orders
+    const fields = [
+        ...title.map((t, i) => ({ key: 'title', value: t, order: titleOrders[i] })),
+        ...description.map((d, i) => ({ key: 'description', value: d, order: descriptionOrders[i] })),
+        ...CopyFileidFortextORCode.map((c, i) => ({ key: 'CopyFileidFortextORCode', value: c, order: CopyFileidFortextORCodeOrders[i] })),
+        ...coverImageURLs.map((url, i) => ({ key: 'coverImageURL', value: url, order: coverImageOrders[i] }))  // Order for coverImageURL
+    ];
+
+    // Sort fields by order before saving
+    fields.sort((a, b) => a.order - b.order);
+
+    // Remove the order property from the fields
+    const sortedFields = fields.map(({ key, value }) => ({ key, value }));
+
+    // Create and save the new blog post
+    const newBlog = new Blog({
+        fields: sortedFields,
+        createdBy: req.user._id
+    });
+
     try {
-        const { title, body } = req.body;
-        const imageUrl = `/uploads/${req.file?.filename}`;
-
-        await Blog.create({
-            title: title,
-            body: body,
-            createdBy: req.user._id,
-            coverImageURL: imageUrl
-        });
-
-        res.redirect('/');
+        await newBlog.save();
+        res.redirect('/blog/' + newBlog._id);
     } catch (err) {
-        console.error('Error creating new blog:', err);
-        res.status(500).send('Internal Server Error');
+        console.error('Error saving blog:', err);
+        res.status(500).send('Error saving blog');
     }
 }
+
 
 async function BlogRenderByID(req, res) {
     try {
