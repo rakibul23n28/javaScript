@@ -59,8 +59,9 @@ async function BlogRenderByID(req, res) {
         }
 
         const comments = await Comment.find({ blogID: id }).populate('createdBy').exec();
+        const title = await blog.fields.find(field => field.key === 'title')?.value;
         res.render('bloginfo', {
-            title: `Blog ${blog.title}`,
+            title: `Blog | ${title}`,
             blog: blog,
             user: req.user,
             comments: comments

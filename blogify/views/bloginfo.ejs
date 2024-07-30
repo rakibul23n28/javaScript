@@ -10,11 +10,11 @@
                     <% } else if (field.key === 'description') { %>
                         <p class="text-gray-700 dark:text-gray-300 mb-6"><%= field.value %></p>
                     <% } else if (field.key === 'coverImageURL' && field.value) { %>
-                        <img class="w-full h-64 object-cover rounded-t-lg" src="<%= field.value %>" alt="Cover Image" />
+                        <img class="w-full h-2/3 object-cover rounded-t-lg" src="<%= field.value %>" alt="Cover Image" />
                     <% } else if (field.key === 'CopyFileidFortextORCode') { %>
                         <div class="relative mb-6">
-                            <pre id="copy-field" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"><%= field.value %></pre>
-                            <button id="copy-button" onclick="copyToClipboard('copy-field', 'copy-button')" class="absolute top-2 right-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Copy</button>
+                            <pre id="copy-field" class="bg-gray-50 border overflow-auto border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"><%= field.value %></pre>
+                            <button id="copy-button" onclick="copyToClipboard('copy-field', 'copy-button')" class="absolute top-2 right-2 text-white bg-gray-500 hover:bg-gray-600 focus:ring-4 focus:outline-none opacity-80 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-1.5 dark:bg-gray-500 dark:hover:bg-gray-600 dark:focus:ring-gray-800">Copy</button>
                         </div>
                     <% } %>
                 <% }) %>
