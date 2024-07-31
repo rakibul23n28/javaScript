@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(checkForAuthentication('token'));
 
 // design file
-app.use(express.static(path.join(__dirname,'public')));
+app.use(express.static(path.join(__dirname, 'public')));
 app.set("view engine", "ejs");
 app.set('views', path.join(__dirname, 'views'));
 
