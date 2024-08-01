@@ -1,4 +1,5 @@
-<%- include("./partials/header") %>
+<%- include("./partials/quillheader") %>
+
 <body>
     <%- include("./partials/navbar") %>
 
@@ -9,7 +10,7 @@
         </div>
         <div class="mb-5">
             <label for="body" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Content</label>
-            <div id="bodyEditor" class="bg-gray-50 border h-96 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></div>
+            <div id="bodyEditor" class=" "></div>
             <input type="hidden" name="body" id="bodyInput">
         </div>
 
@@ -21,10 +22,11 @@
         <button type="submit" class="mt-6 w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
     </form>
     <%- include("./partials/footer") %>
-
+    
     <script>
         const quill = new Quill('#bodyEditor', {
             modules: {
+                syntax: true, 
                 toolbar: [
                     ['bold', 'italic', 'underline', 'strike'],
                     ['blockquote', 'code-block'],
@@ -49,7 +51,16 @@
             const bodyInput = document.getElementById('bodyInput');
             bodyInput.value = quill.root.innerHTML;
         });
-        
     </script>
+    <style>
+        .ql-editor .ql-code-block-container .ql-ui{
+            color: black;
+        }
+        .ql-editor img {
+            max-width: 100%; /* Make sure images are responsive */
+            height: auto;
+            border: 1px solid #ddd; /* Optional: adds a border for visibility */
+        }
+    </style>
 </body>
 </html>

@@ -1,55 +1,89 @@
-<%- include("./partials/header") %>
-<body class="flex flex-col ">
+<%- include("./partials/quillheader") %>
+<body class="flex flex-col">
     <%- include("./partials/navbar") %>
     <div class="container mx-auto my-10 shadow p-5 pb-32 lg:mx-auto md:mx-auto sm:mx-auto">
-            <div class="p-5">
-                <h1 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white mb-4"><%= blog.title %></h1>
-                <div id="editor-container" class="quill-content"></div>
-                <div class="flex flex-col items-end -mt-10">
-                    <div class="flex items-center">
-                        <img class="w-8 h-8 object-cover rounded-full" src="<%= blog.createdBy.profileImageUrl %>" alt="Profile Image" />
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Written by: <%= blog.createdBy.firstName %> <%= blog.createdBy.lastName %></p>
-                    </div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Posted on: <%= new Date(blog.createdAt).toDateString() %></p>
+        <div class="p-5">
+            <h1 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white mb-4"><%= blog.title %></h1>
+            <div id="editor-container" class="quill-content"></div>
+            <div class="flex flex-col items-end -mt-10">
+                <div class="flex items-center">
+                    <img class="w-8 h-8 object-cover rounded-full" src="<%= blog.createdBy.profileImageUrl %>" alt="Profile Image" />
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Written by: <%= blog.createdBy.firstName %> <%= blog.createdBy.lastName %></p>
                 </div>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Posted on: <%= new Date(blog.createdAt).toDateString() %></p>
             </div>
+        </div>
     </div>
-    <div class="container mx-auto  mb-8 shadow p-5">
-            <form action="/blog/comment/<%= blog._id %>" class="grid grid-cols-10 mt-4" method="POST">
+    <div class="container mx-auto mb-8 shadow p-5">
+        <form action="/blog/comment/<%= blog._id %>" class="grid grid-cols-10 mt-4" method="POST">
             <input name="comment" type="text" id="comment" class="col-span-8 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg rounded-r-none focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Add a comment" required />
             <button type="submit" class="col-span-2 w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-l-none rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
-            </form>
-            <div class="mt-6">
-                <h1 class="text-xl font-semibold">Comments (<%= comments.length %>)</h1>
-                <% comments.forEach(comment => { %>
-                <div class="p-5 mt-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow">
-                    <div class="flex items-center">
-                        <img class="w-6 h-6 object-cover rounded-full" src="<%= comment.createdBy.profileImageUrl %>" alt="Profile Image" />
-                        <p class="text-sm text-gray-500 dark:text-gray-400 ml-2"><%= comment.createdBy.email %></p>
-                    </div>
-                    <p class="mt-2 text-gray-900 dark:text-white"><%= comment.comment %></p>
+        </form>
+        <div class="mt-6">
+            <h1 class="text-xl font-semibold">Comments (<%= comments.length %>)</h1>
+            <% comments.forEach(comment => { %>
+            <div class="p-5 mt-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow">
+                <div class="flex items-center">
+                    <img class="w-6 h-6 object-cover rounded-full" src="<%= comment.createdBy.profileImageUrl %>" alt="Profile Image" />
+                    <p class="text-sm text-gray-500 dark:text-gray-400 ml-2"><%= comment.createdBy.email %></p>
                 </div>
-                <hr class="border-t-2 border-gray-300 dark:border-gray-600 my-4">
-                <% }) %>
+                <p class="mt-2 text-gray-900 dark:text-white"><%= comment.comment %></p>
             </div>
+            <hr class="border-t-2 border-gray-300 dark:border-gray-600 my-4">
+            <% }) %>
+        </div>
     </div>
-    
-    
+    <div id="hello"></div>
+
     <%- include("./partials/footer") %>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-          var quill = new Quill('#editor-container', {
-            // theme: 'snow',
-            modules: {
-              toolbar: false // Disable the toolbar
-            },
-            readOnly: true
-          });
-      
-          var body = <%- JSON.stringify(blog.body) %>; // Pass body content from server to client
-          quill.root.innerHTML = body;
+            var quill = new Quill('#editor-container', {
+                modules: {
+                    toolbar: false // Disable the toolbar
+                },
+                readOnly: true
+            });
+    
+            var body = <%- JSON.stringify(blog.body) %>; // Pass body content from server to client
+            quill.root.innerHTML = body;
+    
+            const containers = document.getElementsByClassName('ql-code-block-container');
+            for (let container of containers) {
+                container.addEventListener('dblclick', function() {
+                    const codeBlock = container.innerText;
+                    if (codeBlock) {
+                        copyTextToClipboard(codeBlock);
+                        showNotification('Text copied to clipboard!');
+                    }
+                });
+            }
+    
+            function copyTextToClipboard(text) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            }
+    
+            function showNotification(message) {
+                const notification = document.createElement('div');
+                notification.className = 'notification';
+                notification.textContent = message;
+                document.body.appendChild(notification);
+    
+                setTimeout(() => {
+                    notification.classList.add('fade-out');
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 500); // Match with fade-out duration
+                }, 2000); // Display duration
+            }
         });
     </script>
+    
     <style>
         /* Custom styles for the Quill editor content */
         .quill-content .ql-editor {
@@ -57,6 +91,59 @@
             height: auto;
             overflow: hidden;
         }
+        .ql-editor .ql-code-block-container {
+            color: rgb(255, 236, 65);
+            background-color: rgb(143, 143, 143);
+            padding: 10px;
+            position: relative; /* Add position relative for button placement */
+        }
+    
+        .ql-code-block-container::before {
+            content: "Double-click to copy";
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            pointer-events: none; /* Prevent interaction with the message */
+            z-index: 1;
+        }
+    
+        .ql-code-block-container:hover::before {
+            opacity: 1;
+            visibility: visible;
+        }
+    
+        /* Styles for the notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+    
+        .notification.fade-out {
+            opacity: 0;
+        }
+        .ql-editor img {
+            max-width: 100%; /* Make sure images are responsive */
+            height: auto;
+            border: 1px solid #ddd; /* Optional: adds a border for visibility */
+        }
+
     </style>
+    
+    
 </body>
-</html>
+</html> 
