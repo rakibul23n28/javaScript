@@ -23,7 +23,10 @@
     </form>
     <%- include("./partials/footer") %>
     
+    
     <script>
+        
+        
         const quill = new Quill('#bodyEditor', {
             modules: {
                 syntax: true, 
@@ -53,6 +56,12 @@
         });
     </script>
     <style>
+        .ql-code-block-container{
+            border: 1px solid #E5E5E5;
+            background: #F9F9F9;
+            padding: 32px;
+            border-radius: 4px;
+        }
         .ql-editor .ql-code-block-container .ql-ui{
             color: black;
         }

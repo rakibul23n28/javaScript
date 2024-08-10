@@ -33,21 +33,28 @@
             <% }) %>
         </div>
     </div>
-    <div id="hello"></div>
 
     <%- include("./partials/footer") %>
+    
+    <script>
+        hljs.registerLanguage('javascript', window.hljsJavascript);
+        hljs.highlightAll();
+    </script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var quill = new Quill('#editor-container', {
                 modules: {
+                    syntax: true, // Enable syntax module
                     toolbar: false // Disable the toolbar
                 },
                 readOnly: true
             });
-    
+
             var body = <%- JSON.stringify(blog.body) %>; // Pass body content from server to client
             quill.root.innerHTML = body;
-    
+            hljs.highlightAll(); // Highlight syntax in Quill editor
+
             const containers = document.getElementsByClassName('ql-code-block-container');
             for (let container of containers) {
                 container.addEventListener('dblclick', function() {
@@ -91,11 +98,17 @@
             height: auto;
             overflow: hidden;
         }
-        .ql-editor .ql-code-block-container {
-            color: rgb(255, 236, 65);
-            background-color: rgb(143, 143, 143);
-            padding: 10px;
-            position: relative; /* Add position relative for button placement */
+        .ql-code-block-container{
+            border: 1px solid #E5E5E5;
+            background: #F9F9F9;
+            padding: 32px;
+            border-radius: 4px;
+        }
+        .ql-editor blockquote {
+            border-left: 4px solid #ccc;
+            margin-bottom: 5px;
+            margin-top: 5px;
+            padding-left: 16px;
         }
     
         .ql-code-block-container::before {
@@ -146,4 +159,4 @@
     
     
 </body>
-</html> 
+</html>

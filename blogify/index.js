@@ -22,6 +22,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(checkForAuthentication('token'));
 
 // design file
+// Serve Quill's CSS and JavaScript files from node_modules
+app.use('/highlight', express.static(path.join(__dirname, 'node_modules/highlight.js')));
+app.use('/quill-resize-module', express.static(path.join(__dirname, 'node_modules/quill-resize-image')));
+
+app.use('/quill', express.static(path.join(__dirname, 'node_modules/quill/dist')));
 app.use(express.static(path.join(__dirname, 'public')));
 app.set("view engine", "ejs");
 app.set('views', path.join(__dirname, 'views'));
