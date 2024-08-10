@@ -1,6 +1,9 @@
 const Blog = require('../models/blog');
 const Comment = require('../models/comment');
 
+const fs = require('fs');
+const path = require('path');
+
 function blogAddNew(req, res) {
     res.render('addblog', {
         title: "Blog | Add",
@@ -25,6 +28,7 @@ async function handleNewAddedBlog(req, res) {
         res.status(500).send('Error saving blog');
     }
 }
+
 
 
 
@@ -68,9 +72,97 @@ async function postCommentSave(req, res) {
     }
 }
 
+async function EditBlog(req,res){
+    
+    try{
+        const id = req.params.blogID;
+        const blog = await Blog.findById(id).populate('createdBy').exec();
+        if (!blog) {
+            return res.status(404).send('Blog not found');
+        }
+        const comments = await Comment.find({ blogID: id }).populate('createdBy').exec();
+
+        res.render('editBlog',{
+            title: 'Blog | Edit',
+            user:req.user,
+            blog,
+            comments
+        });
+    }catch (err) {
+        console.error('Error saving comment:', err);
+        res.status(500).send('Internal Server Error');
+    }
+      
+}
+
+async function handleEditBlog(req,res) {
+    try {
+        const id = req.params.blogID;
+        let blog = await Blog.findById(id);
+        
+        if (!blog) {
+            return res.status(404).send('Blog not found');
+        }
+
+        // Update blog fields with data from the form
+        blog.title = req.body.title;
+        blog.body = req.body.body;
+
+        // Handle cover image update if a new image is uploaded
+        if (req.file) {
+            blog.coverImageURL = `/uploads/${req.file.filename}`;
+        }
+
+        // Save the updated blog to the database
+        await blog.save();
+        
+        // Redirect to the updated blog's page
+        res.redirect(`/blog/${id}`);
+    } catch (err) {
+        console.error('Error updating blog:', err);
+        res.status(500).send('Internal Server Error');
+    }
+    
+}
+async function handleDeleteBlog(req, res) {
+    try {
+        const id = req.params.blogID;
+
+        await Comment.deleteMany({blogID:id});
+        
+        // Find and delete the blog by its ID
+        const blog = await Blog.findByIdAndDelete(id);
+        
+        if (!blog) {
+            return res.status(404).send('Blog not found');
+        }
+
+        // Delete the cover image file if it exists
+        if (blog.coverImageURL) {
+            const imagePath = path.resolve(`./public${blog.coverImageURL}`);
+            
+            fs.unlink(imagePath, (err) => {
+                if (err) {
+                    console.error('Error deleting cover image:', err);
+                }
+            });
+        }
+
+        // Redirect to the blog list or homepage after successful deletion
+        res.redirect('/');  // Assuming '/blogs' is your blog list route
+    } catch (err) {
+        console.error('Error deleting blog:', err);
+        res.status(500).send('Internal Server Error');
+    }
+}
+
+
 module.exports = {
     blogAddNew,
     handleNewAddedBlog,
     BlogRenderByID,
-    postCommentSave
+    postCommentSave,
+    EditBlog,
+    handleEditBlog,
+    handleDeleteBlog,
 };
