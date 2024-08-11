@@ -41,7 +41,6 @@
         document.addEventListener("DOMContentLoaded", function() {
             var quill = new Quill('#editor-container', {
                 modules: {
-                    syntax: true, // Enable syntax module
                     toolbar: false // Disable the toolbar
                 },
                 readOnly: true
@@ -49,7 +48,6 @@
 
             var body = <%- JSON.stringify(blog.body) %>; // Pass body content from server to client
             quill.root.innerHTML = body;
-            hljs.highlightAll(); // Highlight syntax in Quill editor
 
             const containers = document.getElementsByClassName('ql-code-block-container');
             for (let container of containers) {
