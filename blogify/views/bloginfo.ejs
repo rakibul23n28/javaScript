@@ -1,11 +1,11 @@
-<%- include("./partials/quillheader") %>
+<%- include("./partials/header") %>
 <body class="flex flex-col">
     <%- include("./partials/navbar") %>
-    <div class="container mx-auto my-10 shadow p-5 pb-32 lg:mx-auto md:mx-auto sm:mx-auto">
+    <div class="container mx-auto my-5 shadow lg:mx-auto md:mx-auto sm:mx-auto">
         <div class="p-5">
             <h1 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white mb-4"><%= blog.title %></h1>
-            <div id="editor-container" class="quill-content"></div>
-            <div class="flex flex-col items-end -mt-10">
+            <div id="editor-container"><%- blog.body %></div>
+            <div class="flex flex-col items-end ">
                 <div class="flex items-center">
                     <img class="w-8 h-8 object-cover rounded-full" src="<%= blog?.createdBy.profileImageUrl %>" alt="Profile Image" />
                     <p class="text-sm text-gray-500 dark:text-gray-400">Written by: <%= blog?.createdBy.firstName %> <%= blog.createdBy.lastName %></p>
@@ -42,49 +42,6 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            var quill = new Quill('#editor-container', {
-                modules: {
-                    toolbar: false // Disable the toolbar
-                },
-                readOnly: true
-            });
-
-            var body = <%- JSON.stringify(blog.body) %>; // Pass body content from server to client
-            quill.root.innerHTML = body;
-
-            const containers = document.getElementsByClassName('ql-code-block-container');
-            for (let container of containers) {
-                container.addEventListener('dblclick', function() {
-                    const codeBlock = container.innerText;
-                    if (codeBlock) {
-                        copyTextToClipboard(codeBlock);
-                        showNotification('Text copied to clipboard!');
-                    }
-                });
-            }
-    
-            function copyTextToClipboard(text) {
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-            }
-    
-            function showNotification(message) {
-                const notification = document.createElement('div');
-                notification.className = 'notification';
-                notification.textContent = message;
-                document.body.appendChild(notification);
-    
-                setTimeout(() => {
-                    notification.classList.add('fade-out');
-                    setTimeout(() => {
-                        document.body.removeChild(notification);
-                    }, 500); // Match with fade-out duration
-                }, 2000); // Display duration
-            }
 
             // Socket.IO setup for real-time comments
             const socket = io();
@@ -145,4 +102,20 @@
             });
         });
     </script>
+    <style>
+        pre{
+            background-color: aqua;
+            background-color: hsl(210,8%,95%);
+            border: 1px solid #E5E5E5;
+            padding: 8px;
+            margin: 2px 0px;
+            border-radius: 6px;
+        }
+        blockquote{
+            border-left: 5px solid #d6b2b2;
+            padding:  5px 20px;
+            margin: 0px 20px ;
+            font-weight: bold;
+        }
+    </style>
 </body>

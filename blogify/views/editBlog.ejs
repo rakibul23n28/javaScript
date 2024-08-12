@@ -1,81 +1,106 @@
-<%- include("./partials/quillheader") %>
+<%- include("./partials/summernoteHeader") %>
 
 <body>
     <%- include("./partials/navbar") %>
-    <form id="blogForm" class="mx-48 bg-white p-8" action="/blog/edit/<%= blog._id %>" method="POST" enctype="multipart/form-data">
-        <div class="flex justify-end mb-5">
-            <a href="/blog/delete/<%= blog._id %>" onclick="return confirm('Are you sure you want to delete this blog?')" class="items-end inline-block rounded-lg text-white font-bold px-8 py-2 bg-red-500 hover:bg-red-800">Delete</a>
-        </div>
-        <div class="mb-5">
-            <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
-            <input name="title" type="text" id="title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" value="<%= blog.title %>" required />
-        </div>
-        <div class="mb-5">
-            <label for="body" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Content</label>
-            <div id="bodyEditor" class=" "></div>
-            <input type="hidden" name="body" id="bodyInput">
-        </div>
+    <div class="container mx-auto my-10 shadow p-5 pb-32 lg:mx-auto md:mx-auto sm:mx-auto">
+        <form id="blogForm" class="mx-48 bg-white p-8" action="/blog/edit/<%= blog._id %>" method="POST" enctype="multipart/form-data">
+            <div class="flex justify-end mb-5">
+                <a href="/blog/delete/<%= blog._id %>" onclick="return confirm('Are you sure you want to delete this blog?')" class="items-end inline-block rounded-lg text-white font-bold px-8 py-2 bg-red-500 hover:bg-red-800">Delete</a>
+            </div>
+            <div class="mb-5">
+                <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
+                <input name="title" type="text" id="title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" value="<%= blog.title %>" required />
+            </div>
+            <div class="mb-5">
+                <label for="body" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Content</label>
+                <textarea id="summernote" name="content"><%- blog.body %></textarea>
+            </div>
 
-        <div class="mb-5">
-            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="coverImage">Cover Image</label>
-            <input name="coverImage" class="block w-full mb-5 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="coverImage" type="file">
-            <% if (blog.coverImageURL) { %>
-            <p class="mt-2">Current cover image:</p>
-            <img src="<%= blog.coverImageURL %>" alt="Cover Image" class="max-w-xs mt-2">
-            <% } %>
-        </div>
+            <div class="mb-5">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="coverImage">Cover Image</label>
+                <input name="coverImage" class="block w-full mb-5 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="coverImage" type="file">
+                <% if (blog.coverImageURL) { %>
+                <p class="mt-2">Current cover image:</p>
+                <img src="<%= blog.coverImageURL %>" alt="Cover Image" class="max-w-xs mt-2">
+                <% } %>
+            </div>
 
-        <button type="submit" class="mt-6 w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Save Changes</button>
+            <button type="submit" class="mt-6 w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Save Changes</button>
 
 
-    </form>
+        </form>
+    </div>
     <%- include("./partials/footer") %>
 
     <script>
         
-        const quill = new Quill('#bodyEditor', {
-            modules: {
-                toolbar: [
-                    ['bold', 'italic', 'underline', 'strike'],
-                    ['blockquote', 'code-block'],
-                    ['link', 'image', 'video', 'formula'],
-                    [{ 'header': 1 }, { 'header': 2 }],
-                    [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
-                    [{ 'script': 'sub' }, { 'script': 'super' }],
-                    [{ 'indent': '-1' }, { 'indent': '+1' }],
-                    [{ 'direction': 'rtl' }],
-                    [{ 'size': ['small', false, 'large', 'huge'] }],
-                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                    [{ 'color': [] }, { 'background': [] }],
-                    [{ 'font': [] }],
-                    [{ 'align': [] }],
-                    ['clean']
-                ]
-            },
-            theme: 'snow'
-        });
-        var body = <%- JSON.stringify(blog.body) %>;
-        quill.root.innerHTML = body;
+        $(document).ready(function() {
+    $('#summernote').summernote({
+        tabsize: 2,
+        height: ($(window).height() - 300),
+        fontSizes: ['8', '9', '10', '11', '12', '14', '18', '24', '36', '48', '60', '72', '96'],
+        toolbar: [
+            ['style', ['style']],
+            ['style', ['bold', 'italic', 'underline', 'clear']],
+            ['font', ['strikethrough', 'superscript', 'subscript']],
+            ['fontsize', ['fontsize']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['height', ['height']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']],
+            ['table', ['table']],
+        ],
+    });
 
-        document.getElementById('blogForm').addEventListener('submit', function (event) {
-            const bodyInput = document.getElementById('bodyInput');
-            bodyInput.value = quill.root.innerHTML;
+    document.querySelector('form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // Create a new FormData object
+        var formData = new FormData();
+
+        // Append the title, content, and the file to the FormData object
+        formData.append('title', document.getElementById('title').value);
+        formData.append('body', $('#summernote').val());
+
+        // Append the file
+        var coverImage = document.getElementById('coverImage').files[0];
+        if (coverImage) {
+            formData.append('coverImage', coverImage);
+        }
+
+        $.ajax({
+            url: '/blog/edit/<%= blog._id %>',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                window.location.href = '/blog/<%= blog._id %>';
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error('Error creating blog:', error);
+            }
         });
+
+    });
+});
     </script>
     <style>
-        .ql-code-block-container{
+        pre{
+            background-color: aqua;
+            background-color: hsl(210,8%,95%);
             border: 1px solid #E5E5E5;
-            background: #F9F9F9;
-            padding: 24px;
-            border-radius: 4px;
+            padding: 8px;
+            margin: 2px 0px;
+            border-radius: 6px;
         }
-        .ql-editor .ql-code-block-container .ql-ui{
-            color: black;
-        }
-        .ql-editor img {
-            max-width: 100%; /* Make sure images are responsive */
-            height: auto;
-            border: 1px solid #ddd; /* Optional: adds a border for visibility */
+        blockquote{
+            border-left: 5px solid #d6b2b2;
+            padding:  5px 20px;
+            margin: 0px 20px ;
+            font-weight: bold;
         }
     </style>
 </body>

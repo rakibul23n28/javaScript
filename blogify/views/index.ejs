@@ -103,7 +103,6 @@
             searchInput.addEventListener('input', () => {
                 const query = searchInput.value;
                 const url = new URL(window.location);
-                console.log(url);
                 
                 url.searchParams.set('q', query);
 
