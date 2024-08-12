@@ -5,7 +5,7 @@ const {
   blogAddNew,
   handleNewAddedBlog,
   BlogRenderByID,
-  postCommentSave,
+  // postCommentSave,
   EditBlog,
   handleEditBlog,
   handleDeleteBlog,
@@ -46,7 +46,7 @@ const router = Router();
 router.get('/add-new',checkAuthenticate,blogAddNew);
 router.post('/add-new',upload.single('coverImage'),handleNewAddedBlog);
 router.get('/:blogID',BlogRenderByID);
-router.post('/comment/:blogID',postCommentSave);
+// router.post('/comment/:blogID',checkAuthenticate,postCommentSave);
 
 router.get('/edit/:blogID',EditBlog);
 router.post('/edit/:blogID',upload.single('coverImage'),handleEditBlog);

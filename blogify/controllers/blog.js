@@ -30,8 +30,6 @@ async function handleNewAddedBlog(req, res) {
 }
 
 
-
-
 async function BlogRenderByID(req, res) {
     try {
         const id = req.params.blogID;
@@ -54,23 +52,25 @@ async function BlogRenderByID(req, res) {
     }
 }
 
-async function postCommentSave(req, res) {
-    try {
-        const { comment } = req.body;
-        const blogID = req.params.blogID;
+// async function postCommentSave(req, res) {
+//     try {
+//         const { comment } = req.body;
+//         console.log(req.query.q);
+        
+//         const blogID = req.params.blogID;
 
-        await Comment.create({
-            comment: comment,
-            blogID: blogID,
-            createdBy: req.user._id
-        });
+//         await Comment.create({
+//             comment: comment,
+//             blogID: blogID,
+//             createdBy: req.user._id
+//         });
 
-        res.redirect(`/blog/${blogID}`);
-    } catch (err) {
-        console.error('Error saving comment:', err);
-        res.status(500).send('Internal Server Error');
-    }
-}
+//         res.redirect(`/blog/${blogID}`);
+//     } catch (err) {
+//         console.error('Error saving comment:', err);
+//         res.status(500).send('Internal Server Error');
+//     }
+// }
 
 async function EditBlog(req,res){
     
@@ -161,7 +161,7 @@ module.exports = {
     blogAddNew,
     handleNewAddedBlog,
     BlogRenderByID,
-    postCommentSave,
+    // postCommentSave,
     EditBlog,
     handleEditBlog,
     handleDeleteBlog,

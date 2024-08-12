@@ -54,7 +54,7 @@
             },
             theme: 'snow'
         });
-        var body = <%- JSON.stringify(blog.body) %>; // Pass body content from server to client
+        var body = <%- JSON.stringify(blog.body) %>;
         quill.root.innerHTML = body;
 
         document.getElementById('blogForm').addEventListener('submit', function (event) {

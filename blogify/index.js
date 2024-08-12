@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const  http = require('http');
 const path = require('path');
 const app = express();
+const socketService = require('./service/socket');
 const PORT = process.env.PORT || 3000;
 
 const server = http.createServer(app);
@@ -33,6 +34,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.use('/blog',blogRoute);
 app.use('/user', authenticationRoute);
 app.use('/', staticRoute);
+
+const io = socketService(server);
 
 
 mongoose.connect("mongodb://localhost:27017/blogify", {
