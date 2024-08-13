@@ -34,7 +34,7 @@
 
     <script>
         
-        $(document).ready(function() {
+document.addEventListener("DOMContentLoaded", function() {
     $('#summernote').summernote({
         tabsize: 2,
         height: ($(window).height() - 300),
@@ -51,7 +51,38 @@
             ['view', ['fullscreen', 'codeview', 'help']],
             ['table', ['table']],
         ],
+        callbacks: {
+            onImageUpload: function(files) {
+                uploadImage(files[0]);
+            }
+        }
     });
+    window.addEventListener('beforeunload', function() {
+        fetch('/blog/cleanup', {
+            method: 'POST',
+        }).catch(error => console.error('Error during cleanup:', error));
+    });
+    function uploadImage(file) {
+        var formData = new FormData();
+        formData.append('file', file);
+
+        fetch('/blog/upload/image', {
+            method: 'POST',
+            body: formData // `FormData` handles the content type automatically
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Assuming the response contains a URL to the uploaded image
+            const url = data.url;
+            if (url) {
+                // Insert the image into Summernote (assuming Summernote is available)
+                $('#summernote').summernote('insertImage', url);
+            }
+        })
+        .catch(error => {
+            console.error('Error uploading image:', error);
+        });
+    }
 
     document.querySelector('form').addEventListener('submit', function(event) {
         event.preventDefault();

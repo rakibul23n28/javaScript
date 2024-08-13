@@ -31,8 +31,8 @@
                     <% if (user && user._id.toString() === comment.createdBy._id.toString()) { %>
                     <button class="delete-comment bg-red-500 text-white px-4 py-2 mt-2 rounded" data-comment-id="<%= comment._id %>">Delete</button>
                     <% } %>
+                    <hr class="border-t-2 border-gray-300 dark:border-gray-600 my-4">
                 </div>
-                <hr class="border-t-2 border-gray-300 dark:border-gray-600 my-4">
                 <% }) %>
         </div>
     </div>
@@ -41,66 +41,66 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function() {
+    const socket = io();
 
-            // Socket.IO setup for real-time comments
-            const socket = io();
+    // Listen for new comments from the server
+    socket.on('commentAdded', (comment) => {
+        const deleteButton = `<button class="delete-comment bg-red-500 text-white px-4 py-2 mt-2 rounded" data-comment-id="${comment._id}">Delete</button>`;
+        const commentsContainer = document.querySelector('.comments-container');
+        const newComment = `
+            <div class="p-5 mt-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow" id="comment-${comment._id}">
+                <div class="flex items-center">
+                    <img class="w-6 h-6 object-cover rounded-full" src="${comment.createdBy.profileImageUrl}" alt="Profile Image" />
+                    <p class="text-sm text-gray-500 dark:text-gray-400 ml-2">${comment.createdBy.email}</p>
+                </div>
+                <p class="mt-2 text-gray-900 dark:text-white">${comment.comment}</p>
+                ${comment.createdBy._id.toString() === `<%= user?._id %>` ? deleteButton : ''}
+                <hr class="border-t-2 border-gray-300 dark:border-gray-600 my-4">
+            </div>
+        `;
+        commentsContainer.innerHTML += newComment; // Append the new comment to the list
+        attachDeleteHandlers();
+    });     
 
-            // Listen for new comments from the server
-            socket.on('commentAdded', (comment) => {
-                const commentsContainer = document.querySelector('.comments-container');
-                const newComment = `
-                    <div class="p-5 mt-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow">
-                        <div class="flex items-center">
-                            <img class="w-6 h-6 object-cover rounded-full" src="${comment.createdBy.profileImageUrl}" alt="Profile Image" />
-                            <p class="text-sm text-gray-500 dark:text-gray-400 ml-2">${comment.createdBy.email}</p>
-                        </div>
-                        <p class="mt-2 text-gray-900 dark:text-white">${comment.comment}</p>
-                        <button class="delete-comment bg-red-500 text-white px-4 py-2 mt-2 rounded" data-comment-id="${comment.comment}">Delete</button>
-                    </div>
+    // Handle form submission for new comments
+    document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const commentInput = document.getElementById('comment');
+        const comment = commentInput.value;
+        const blogID = '<%= blog._id %>';
+        const createdBy = '<%= user?._id %>'; // You need to pass the user's ID here
+        if (!createdBy) {
+            window.location.href = '/login'; // Adjust the URL to your login page route
+            return;
+        }
+        socket.emit('newComment', { comment, blogID, createdBy });
+        commentInput.value = ''; // Clear the input field
+    });
 
-                    <hr class="border-t-2 border-gray-300 dark:border-gray-600 my-4">
-                `;
-                commentsContainer.innerHTML += newComment; // Append the new comment to the list
-            });
-
-            // Handle form submission for new comments
-            document.querySelector('form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                
-                const commentInput = document.getElementById('comment');
-                const comment = commentInput.value;
-                const blogID = '<%= blog._id %>';
-                const createdBy = '<%= user?._id %>'; // You need to pass the user's ID here
-                if (!createdBy) {
-                    window.location.href = '/login'; // Adjust the URL to your login page route
-                    return;
-                }
-
-                socket.emit('newComment', { comment, blogID, createdBy });
-                
-
-                commentInput.value = ''; // Clear the input field
-            });
-                // Handle delete comment functionality
-            document.querySelectorAll('.delete-comment').forEach(button => {
-                button.addEventListener('click', function() {
-                    const commentID = this.getAttribute('data-comment-id');
-                    if (confirm('Are you sure you want to delete this comment?')) {
-                        socket.emit('deleteComment', commentID);
-                    }
-                });
-            });
-
-            // Listen for comment deletion from the server
-            socket.on('commentDeleted', (commentID) => {
-                const commentElement = document.getElementById(`comment-${commentID}`);
-                if (commentElement) {
-                    commentElement.remove(); // Remove the deleted comment from the DOM
+    // Handle delete comment functionality
+    function attachDeleteHandlers() {
+        document.querySelectorAll('.delete-comment').forEach(button => {
+            button.addEventListener('click', function() {
+                const commentID = this.getAttribute('data-comment-id');
+                if (confirm('Are you sure you want to delete this comment?')) {
+                    socket.emit('deleteComment', commentID);
                 }
             });
         });
+    }
+
+    attachDeleteHandlers();
+
+    // Listen for comment deletion from the server
+    socket.on('commentDeleted', (commentID) => {
+        const commentElement = document.getElementById(`comment-${commentID}`);
+        if (commentElement) {
+            commentElement.remove(); // Remove the deleted comment from the DOM
+        }
+    });
+});
+
     </script>
     <style>
         pre{

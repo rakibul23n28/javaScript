@@ -15,6 +15,20 @@ async function handleNewAddedBlog(req, res) {
     const { title, body } = req.body;
     const imageUrl = `/uploads/${req.file?.filename}`;
 
+    const usedImages = extractImageUrls(body);
+
+    // Delete unused images
+    if (req.session.uploadedImages) {
+        req.session.uploadedImages.forEach((imageUrl) => {
+            if (!usedImages.includes(imageUrl)) {
+                deleteImageFromServer(imageUrl);
+            }
+        });
+
+        // Clear the session storage for uploaded images
+        req.session.uploadedImages = null;
+    }
+
     try {
         const newBlog = await Blog.create({
             title: title,
@@ -27,6 +41,28 @@ async function handleNewAddedBlog(req, res) {
         console.error('Error saving blog:', err);
         res.status(500).send('Error saving blog');
     }
+}
+
+// Helper function to extract image URLs from the content
+function extractImageUrls(content) {
+    const regex = /<img[^>]+src="([^">]+)"/g;
+    const urls = [];
+    let match;
+    while ((match = regex.exec(content)) !== null) {
+        urls.push(match[1]);
+    }
+    return urls;
+}
+
+// Helper function to delete an image from the server
+function deleteImageFromServer(imageUrl) {
+    const filePath = path.join(__dirname, '../public', imageUrl); // Adjusting the path to point to the public directory
+    
+    fs.unlink(filePath, (err) => {
+        if (err) {
+            console.error(`Failed to delete image: ${filePath}`, err);
+        }
+    });
 }
 
 
@@ -97,21 +133,35 @@ async function EditBlog(req,res){
 
 async function handleEditBlog(req,res) {
     try {
+
         const id = req.params.blogID;
-        let blog = await Blog.findById(id);
+           
+        const { title, body } = req.body;
+
+        const usedImages = extractImageUrls(body);
+         // Delete unused images
+        if (req.session.uploadedImages) {
+            req.session.uploadedImages.forEach((imageUrl) => {
+                if (!usedImages.includes(imageUrl)) {
+                    deleteImageFromServer(imageUrl);
+                }
+            });
+
+            // Clear the session storage for uploaded images
+            req.session.uploadedImages = null;
+        }
         
+        let blog = await Blog.findById(id);        
         if (!blog) {
             return res.status(404).send('Blog not found');
         }
-
-        // Update blog fields with data from the form
-        blog.title = req.body.title;
-        blog.body = req.body.body;
-
         // Handle cover image update if a new image is uploaded
         if (req.file) {
             blog.coverImageURL = `/uploads/${req.file.filename}`;
         }
+
+        blog.title =title;
+        blog.body =body;
 
         // Save the updated blog to the database
         await blog.save();
@@ -124,6 +174,7 @@ async function handleEditBlog(req,res) {
     }
     
 }
+
 async function handleDeleteBlog(req, res) {
     try {
         const id = req.params.blogID;
@@ -135,6 +186,21 @@ async function handleDeleteBlog(req, res) {
         
         if (!blog) {
             return res.status(404).send('Blog not found');
+        }
+        const usedImages = extractImageUrls(blog.body);
+        console.log(usedImages);
+        
+         // Delete unused images
+        if (usedImages) {
+            usedImages.forEach((imageUrl) => {
+                const filePath = path.join(__dirname, '../public', imageUrl);
+    
+                fs.unlink(filePath, (err) => {
+                    if (err) {
+                        console.error(`Failed to delete image: ${filePath}`, err);
+                    }
+                });
+            });
         }
 
         // Delete the cover image file if it exists
@@ -148,8 +214,7 @@ async function handleDeleteBlog(req, res) {
             });
         }
 
-        // Redirect to the blog list or homepage after successful deletion
-        res.redirect('/');  // Assuming '/blogs' is your blog list route
+        res.redirect('/');  
     } catch (err) {
         console.error('Error deleting blog:', err);
         res.status(500).send('Internal Server Error');

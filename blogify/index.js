@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cookieParser = require('cookie-parser');
 const  http = require('http');
 const path = require('path');
+const session = require('express-session');
 const app = express();
 const socketService = require('./service/socket');
 const PORT = process.env.PORT || 3000;
@@ -21,6 +22,12 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(checkForAuthentication('token'));
+// Session setup
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: true,
+}));
 
 // design file
 // Serve Quill's CSS and JavaScript files from node_modules
