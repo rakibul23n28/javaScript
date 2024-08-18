@@ -1,10 +1,10 @@
 <!-- Sidebar -->
 <div class="w-1/6 h-screen bg-gray-800 text-white fixed top-0 left-0 p-6 z-10">
-    <% if (user) { %>
-        <div class="flex items-center mb-6">
+    <% if (locals.user) { %>
+        <div class="flex flex-col items-center mb-4 gap-3 ">
             <img class="w-12 h-12 object-cover rounded-full" src="<%= user.profileImageUrl %>" alt="User Profile Image" />
-            <div class="ml-4">
-                <p class="text-lg font-semibold"><%= user.firstName %> <%= user.lastName %></p>
+            <div class="flex flex-col items-center">
+                <p class="text-lg font-semibold"><%= user.name %></p>
                 <p class="text-sm text-gray-300"><%= user.email %></p>
             </div>
         </div>
@@ -14,7 +14,7 @@
         <a href="/" class="text-white hover:text-gray-300">Home</a>
         <a href="/blog/my-blogs" class="text-white hover:text-gray-300 ">My Blogs</a>
         <a href="/blog/add-new" class="text-white hover:text-gray-300 ">Add Blog</a>
-        <% if (user) { %>
+        <% if (locals.user) { %>
             <div class="relative">
                 <button id="profile-menu-button" class="text-white hover:text-gray-300 flex items-center">
                     <span>Profile</span>
