@@ -188,7 +188,6 @@ async function handleDeleteBlog(req, res) {
             return res.status(404).send('Blog not found');
         }
         const usedImages = extractImageUrls(blog.body);
-        console.log(usedImages);
         
          // Delete unused images
         if (usedImages) {

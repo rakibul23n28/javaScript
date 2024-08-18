@@ -2,8 +2,11 @@
 <body class="flex flex-col">
     <%- include("./partials/navbar") %>
     <div class="container mx-auto my-5 shadow lg:mx-auto md:mx-auto sm:mx-auto">
-        <div class="p-5">
-            <h1 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white mb-4"><%= blog.title %></h1>
+        <div class="p-5 flex flex-col gap-5">
+            <div class="">
+                <h1 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white mb-4"><%= blog.title %></h1>
+                <hr class="border-t-2 border-gray-300 dark:border-gray-600 my-4">
+            </div>
             <div id="editor-container"><%- blog.body %></div>
             <div class="flex flex-col items-end ">
                 <div class="flex items-center">
@@ -20,7 +23,7 @@
             <button type="submit" class="col-span-2 w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-l-none rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
         </form>
         <div class="mt-6 comments-container">
-            <h1 class="text-xl font-semibold">Comments</h1>
+            <h1 class="text-xl font-semibold">(<span><%= comments.length %></span>) Comments</h1>
             <% comments.forEach(comment => { %>
                 <div class="p-5 mt-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow" id="comment-<%= comment._id %>">
                     <div class="flex items-center">
@@ -59,7 +62,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 <hr class="border-t-2 border-gray-300 dark:border-gray-600 my-4">
             </div>
         `;
-        commentsContainer.innerHTML += newComment; // Append the new comment to the list
+        commentsContainer.innerHTML += newComment;
+        const comments = document.querySelector('.comments-container span');
+        comments.innerHTML = parseInt(comments.innerHTML) + 1;
+        
         attachDeleteHandlers();
     });     
 
@@ -69,13 +75,13 @@ document.addEventListener("DOMContentLoaded", function() {
         const commentInput = document.getElementById('comment');
         const comment = commentInput.value;
         const blogID = '<%= blog._id %>';
-        const createdBy = '<%= user?._id %>'; // You need to pass the user's ID here
+        const createdBy = '<%= user?._id %>';
         if (!createdBy) {
-            window.location.href = '/login'; // Adjust the URL to your login page route
+            window.location.href = '/login'; 
             return;
         }
         socket.emit('newComment', { comment, blogID, createdBy });
-        commentInput.value = ''; // Clear the input field
+        commentInput.value = '';
     });
 
     // Handle delete comment functionality
@@ -96,7 +102,9 @@ document.addEventListener("DOMContentLoaded", function() {
     socket.on('commentDeleted', (commentID) => {
         const commentElement = document.getElementById(`comment-${commentID}`);
         if (commentElement) {
-            commentElement.remove(); // Remove the deleted comment from the DOM
+            commentElement.remove();
+            const comments = document.querySelector('.comments-container span');
+            comments.innerHTML = parseInt(comments.innerHTML) - 1;
         }
     });
 });
