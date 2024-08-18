@@ -1,3 +1,4 @@
+const { title } = require('process');
 const Blog = require('../models/blog');
 const Comment = require('../models/comment');
 
@@ -86,6 +87,16 @@ async function BlogRenderByID(req, res) {
         console.error('Error rendering blog by ID:', err);
         res.redirect('/');
     }
+}
+async function renderOwnBlogs(req,res) {
+    try {
+        const blogs = await Blog.find({createdBy: req.user._id}).populate('createdBy').exec();
+        res.render('ownblogs', { title: 'Own Blogs', user: req.user, blogs: blogs });
+    } catch (err) {
+        console.error('Error rendering own blogs:', err);
+        res.status(500).send('Internal Server Error');
+    }
+    
 }
 
 // async function postCommentSave(req, res) {
@@ -229,4 +240,5 @@ module.exports = {
     EditBlog,
     handleEditBlog,
     handleDeleteBlog,
+    renderOwnBlogs,
 };

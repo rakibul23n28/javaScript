@@ -1,17 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title><%= title %></title>
-    <!-- Include your stylesheets here -->
-</head>
+
+<%- include("./partials/header") %>
 <body>
-    <%- include("./partials/header") %>
     <%- include("./partials/navbar") %>
+    <!-- Main Content Wrapper -->
+    <div class=" ml-[16.6%]">
     <!-- Search Bar -->
-    <div class="flex items-center gap-4">
-        <input type="text" id="searchInput" placeholder="Search..." class="py-2 px-4 border rounded-lg" />
+    <div class="flex justify-center p-10">
+        <input type="text" id="searchInput" placeholder="Search..." class="py-2 px-4 border rounded-sm" />
+        <button id="searchButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2">Search</button>
     </div>
-    <div id="resultsContainer" class="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-4 mx-40 my-10">
+    <div id="resultsContainer" class="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-4 m-10">
         <!-- Search results will be dynamically injected here -->
         <% blogs.forEach(blog => { %>
             <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700" data-blog-id="<%= blog._id %>" data-cover-url="<%= blog.coverImageURL %>" data-title="<%= blog.title %>" data-created-by-id="<%= blog.createdBy._id %>" data-created-by-firstname="<%= blog.createdBy.firstName %>" data-created-by-lastname="<%= blog.createdBy.lastName %>" data-created-at="<%= new Date(blog.createdAt).toISOString() %>">
@@ -41,7 +39,7 @@
             </div>
         <% }) %>
     </div>
-    <%- include("./partials/footer") %>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
@@ -112,6 +110,15 @@
                     fetchAndDisplayResults(query);
                 } else {
                     displayResults(initialBlogs);
+                }
+            });
+
+            // Search button event listener
+            const searchButton = document.getElementById('searchButton');
+            searchButton.addEventListener('click', async () => {
+                const query = searchInput.value;
+                if (query.length > 0) {
+                    await fetchAndDisplayResults(query);
                 }
             });
 

@@ -1,8 +1,8 @@
 const {Schema,model} = require('mongoose');
 
-const commentScama= new Schema({
-    comment:{
-        type: String,
+const timeSpentScama= new Schema({
+    timeSpent:{
+        type: Number,
         required: true
     },
     createdBy:{
@@ -12,12 +12,7 @@ const commentScama= new Schema({
     blogID:{
         type: Schema.Types.ObjectId,
         ref: 'blog'
-    },
-    isSpam:{
-        type: Boolean,
-        default: false
     }
-
 },{timestamps: true});
 
-module.exports = model('comment', commentScama);
+module.exports = model('timeSpent', timeSpentScama);

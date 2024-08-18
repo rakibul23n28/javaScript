@@ -45,6 +45,38 @@ module.exports = function(server){
                 socket.emit('error', { message: 'Failed to delete comment' });
             }
         });
+        //mark to spam
+        socket.on('markToSpam', async (commentID) => {
+            try {
+                const comment = await Comment.findById(commentID);
+                if (comment) {
+                    comment.isSpam = true;
+                    await comment.save();
+                    io.emit('commentMarkedAsSpam', commentID);
+                } else {
+                    socket.emit('error', { message: 'Comment not found' });
+                }
+            } catch (error) {
+                console.error('Error deleting comment:', error);
+                socket.emit('error', { message: 'Failed to mark comment as spam' });
+            }
+        })
+        //unmark to spam
+        socket.on('unmarkToSpam', async (commentID) => {
+            try {
+                const comment = await Comment.findById(commentID);
+                if (comment) {
+                    comment.isSpam = false;
+                    await comment.save();
+                    io.emit('commentUnmarkedAsSpam', commentID);
+                } else {
+                    socket.emit('error', { message: 'Comment not found' });
+                }
+            } catch (error) {
+                console.error('Error deleting comment:', error);
+                socket.emit('error', { message: 'Failed to unmark comment as spam' });
+            }
+        })
 
         socket.on('disconnect', () => {
             console.log('User disconnected:', socket.id);

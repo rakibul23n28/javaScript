@@ -1,8 +1,9 @@
 <%- include("./partials/summernoteHeader") %>
 <body>
     <%- include("./partials/navbar") %>
-    <div class="container mx-auto my-10 shadow p-5 pb-32 lg:mx-auto md:mx-auto sm:mx-auto">
-        <form id="blogForm" class="mx-48 bg-white p-8" action="/blog/add-new" method="POST" enctype="multipart/form-data">
+    <div class="flex-1 ml-[16.6%] flex flex-row">
+        <div class="w-2/3 p-5">
+        <form id="blogForm" class="w-full" action="/blog/add-new" method="POST" enctype="multipart/form-data">
             <div class="mb-5">
                 <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
                 <input name="title" type="text" id="title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
@@ -14,16 +15,16 @@
     
             <div class="mb-5">
                 <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="coverImage">Cover Image</label>
-                <input name="coverImage" class="block w-full mb-5 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="coverImage" type="file">
+                <input name="coverImage" class="block w-full mb-5 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="coverImage" type="file" accept="image/*">
             </div>
     
             <button type="submit" class="mt-6 w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Save Changes</button>
         </form>
+        </div>
     </div>
-    <%- include("./partials/footer") %>
 
     <script>
-$(document).ready(function() {
+    document.addEventListener("DOMContentLoaded", function() {
     $('#summernote').summernote({
         tabsize: 2,
         height: ($(window).height() - 300),
@@ -47,7 +48,7 @@ $(document).ready(function() {
         }
     });
     window.addEventListener('beforeunload', function() {
-        fetch('/blog/cleanup', {
+        fetch('/api/cleanup', {
             method: 'POST',
         }).catch(error => console.error('Error during cleanup:', error));
     })
@@ -55,7 +56,7 @@ $(document).ready(function() {
         var formData = new FormData();
         formData.append('file', file);
 
-        fetch('/blog/upload/image', {
+        fetch('/api/upload/image', {
             method: 'POST',
             body: formData // `FormData` handles the content type automatically
         })

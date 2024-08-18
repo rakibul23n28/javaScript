@@ -1,35 +1,63 @@
-
-<div class="flex flex-row justify-between text-1xl py-6 px-10 items-center">
-
-    <div class="flex items-center gap-0 justify-center text-3xl">
-
-        <a href="/" class="rounded-full bg-red-500 h-10 w-10 text-white text-center">Fy</a>
-        <% if (locals.user) { %>
-            <a href="/" class="text-end font-medium "><%= user.name %></a>
-         
-        <% } %>
-    </div>
-    <div class="flex items-center gap-12 justify-centertext-2xl">
-        <a href="/">Blogs</a>
-        <a href="/blog/add-new">Add blog</a>
-        <a href="#">About Us</a>
-        <a href="#">Contact</a>
-    </div>
-    
-    <% if (locals.user) { %>
-        <div class="flex gap-7">
-            <% if (user.role === 'ADMIN') { %>
-                <a href="/admin/users"> <button class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">Users</button></a>
-                <a href="/admin/urls"> <button class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">Urls</button></a>
-            <% } %>
-            <a href="/user/logout"> <button onclick="return confirm('Are you want to Log out?')" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Log out</button></a>
+<!-- Sidebar -->
+<div class="w-1/6 h-screen bg-gray-800 text-white fixed top-0 left-0 p-6 z-10">
+    <% if (user) { %>
+        <div class="flex items-center mb-6">
+            <img class="w-12 h-12 object-cover rounded-full" src="<%= user.profileImageUrl %>" alt="User Profile Image" />
+            <div class="ml-4">
+                <p class="text-lg font-semibold"><%= user.firstName %> <%= user.lastName %></p>
+                <p class="text-sm text-gray-300"><%= user.email %></p>
+            </div>
         </div>
-    <% } 
-    else { %>
-        <div class="flex items-center gap-1 justify-centertext-2xl">
-                <a href="/signup"> <button class="border hover:bg-slate-300 font-bold py-2 px-4 rounded">Sign Up</button> </a>
-                <a href="/login"><button class="border hover:bg-slate-300 font-bold py-2 px-4 rounded">Login</button></a>
-        </div>
+        <hr class="border-t-2 border-gray-300">
     <% } %>
-     
- </div>
+    <nav class="flex flex-col gap-4 ml-5 mt-5">
+        <a href="/" class="text-white hover:text-gray-300">Home</a>
+        <a href="/blog/my-blogs" class="text-white hover:text-gray-300 ">My Blogs</a>
+        <a href="/blog/add-new" class="text-white hover:text-gray-300 ">Add Blog</a>
+        <% if (user) { %>
+            <div class="relative">
+                <button id="profile-menu-button" class="text-white hover:text-gray-300 flex items-center">
+                    <span>Profile</span>
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="profile-menu" class="mt-2 hidden">
+                    <ul class="py-1">
+                        <li><a href="/profile/analytics" class="block px-4 py-2 text-sm ">Analytics</a></li>
+                        <li><a href="/profile/edit" class="block px-4 py-2 text-sm ">Edit Profile</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="flex gap-7 mt-5">
+                <a href="/user/logout"> <button onclick="return confirm('Are you sure you want to log out?')" class="text-red-500 hover:text-red-400">Log out</button></a>
+            </div>
+        <% } 
+        else { %>
+            <div class="flex gap-3  mt-5">
+                <a href="/signup"> <button class=" text-green-500 hover:text-green-600">Sign Up</button> </a>
+                <a href="/login"><button class=" text-green-500 hover:text-green-600">Login</button></a>
+            </div>
+        <% } %>
+    </nav>
+    
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        // Profile menu toggle
+        document.getElementById('profile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('profile-menu');
+            menu.classList.toggle('hidden');
+        });
+                // Close dropdown if clicking outside
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('profile-menu');
+            const button = document.getElementById('profile-menu-button');
+            if (!button.contains(event.target) && !menu.contains(event.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+    });
+</script>

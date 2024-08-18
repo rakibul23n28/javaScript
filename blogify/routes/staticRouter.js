@@ -17,26 +17,15 @@ router.get("/",async (req, res) => {
     }
   });
 
-// Route for searching blogs
-router.get('/api/search', async (req, res) => {
-  const query = req.query.q || '';
-  try {
-      const blogs = await Blog.find({
-          title: { $regex: query, $options: 'i' }
-      }).populate('createdBy').exec();
-      res.json(blogs);
-  } catch (err) {
-      console.error(err);
-      res.status(500).send('Server Error');
-  }
-});
+
 router.get('/signup', redirectIfAuthenticate, (req, res) => {
-res.render('signup',{ title: 'Sign Up' });
+res.render('signup',{ title: 'Sign Up' ,user: req.user});
 });
 
 router.get('/login',redirectIfAuthenticate, (req, res) => {
 res.render('login',{ 
     title: 'Login',
+    user: req.user
     });
 });
 

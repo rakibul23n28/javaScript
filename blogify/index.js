@@ -16,6 +16,7 @@ const {checkForAuthentication} = require('./middlewares/authentication');
 const staticRoute = require('./routes/staticRouter');
 const authenticationRoute = require('./routes/authentication');
 const blogRoute = require('./routes/blog');
+const ApiRoute = require('./routes/api');
 
 
 app.use(express.json());
@@ -40,6 +41,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use('/blog',blogRoute);
 app.use('/user', authenticationRoute);
+app.use('/api', ApiRoute);
 app.use('/', staticRoute);
 
 const io = socketService(server);
