@@ -14,8 +14,8 @@ const commentScama= new Schema({
         ref: 'blog'
     },
     isSpam:{
-        type: Boolean,
-        default: false
+        type: Number,
+        default: 0
     }
 
 },{timestamps: true});

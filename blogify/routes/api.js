@@ -4,6 +4,7 @@ const upload = require('../middlewares/multer');
 const path = require('path');
 const fs = require('fs');
 const Blog = require('../models/blog');
+const TimeSpent = require("../models/timeSpent");
 
 // Image upload route
 router.post('/upload/image', upload.single('file'), (req, res) => {
@@ -54,5 +55,37 @@ router.get('/search', async (req, res) => {
         res.status(500).send('Server Error');
     }
   });
+
+
+  router.post('/time-spent', async (req, res) => {
+    try {
+        const { timeSpent, blogID, userID } = req.body;
+        
+        if (!userID) {
+            return res.status(200).json({ message: 'Time spent recorded without user ID' });
+        }
+        
+        // Find existing time spent entry for this blog and user
+        const findTimeSpent = await TimeSpent.findOne({ blogID: blogID, createdBy: userID });
+        if (findTimeSpent) {
+            // Update the existing entry
+            findTimeSpent.timeSpent += timeSpent;
+            await findTimeSpent.save();
+            return res.status(200).json({ message: 'Time spent recorded successfully' }); // Add return here
+        }
+
+        // If no existing entry, create a new one
+        const timeSpentEntry = new TimeSpent({ blogID: blogID, createdBy: userID, timeSpent: timeSpent });
+        await timeSpentEntry.save();
+        return res.status(200).json({ message: 'Time spent recorded successfully' }); // Add return here
+
+    } catch (err) {
+        // Handle any errors
+        return res.status(500).json({ error: err.message });
+    }
+});
+
+  
+  module.exports = router;
 
 module.exports = router

@@ -22,7 +22,24 @@
                     </div>
                     <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Posted on: <%= new Date(blog.createdAt).toDateString() %></p>
                 </div>
+                <div class="flex flex-col items-end mt-4">
+                    <div class="flex items-center space-x-4">
+                        <!-- Like Button -->
+                        <button id="like-btn" class="flex cursor-default items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white focus:outline-none">
+                            <img src="/images/like.png" alt="like" class="cursor-pointer w-5 h-5 filter grayscale <%= liked ? 'opacity-100' : 'opacity-60' %>  ">
+                            <span id="like-count" class="ml-2 text-sm"><%= countlike %></span>
+                        </button>
+                
+                        <!-- Share Button -->
+                        <button id="share-btn" class="flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white focus:outline-none">
+                            <img src="/images/share.png" alt="share" class="w-5 h-5 filter grayscale opacity-60">
+                            <span class="ml-2 text-sm">Share</span>
+                        </button>
+                    </div>
+                </div>
             </div>
+
+            
             
             <div class="container mx-auto mb-8 shadow p-5">
                 <form class="grid grid-cols-10 mt-4">
@@ -33,17 +50,18 @@
                     <h1 class="text-xl font-semibold">(<span><%= comments.length %></span>) Comments</h1>
                     <% comments.forEach(comment => { %>
                         
-                        <div class="p-5 mt-4 <%= comment.isSpam ? 'bg-red-100' : 'bg-gray-50' %> dark:<%= comment.isSpam ? 'bg-red-900' : 'bg-gray-700' %> rounded-lg shadow relative" id="comment-<%= comment._id %>">
+                        <div class="p-5 mt-4 bg-gray-50 rounded-lg shadow relative" id="comment-<%= comment._id %>">
                             <div class="flex items-center">
                                 <img class="w-6 h-6 object-cover rounded-full" src="<%= comment.createdBy.profileImageUrl %>" alt="Profile Image" />
                                 <p class="text-sm text-gray-500 dark:text-gray-400 ml-2"><%= comment.createdBy.email %></p>
-                                <% if (user && user._id.toString() === comment.createdBy._id.toString()) { %>
                                 <!-- Three-dot menu -->
                                 <div class=" flex relative ml-auto">
-                                    <a href="#" class="px-4 py-2 underline text-sm text-gray-500 hover:text-gray-800" data-action="<%= comment.isSpam ? 'unspam' : 'spam'%>" data-comment-id="<%= comment._id %>"><%= comment.isSpam ? 'Unmark as Spam' : 'Mark as Spam' %></a>
+                                    <a href="#" class="px-4 py-2 underline text-sm text-gray-500 hover:text-gray-800" data-action="spam" data-comment-id="<%= comment._id %>">
+                                    Mark as Spam</a>
+                                    <% if (user && user._id.toString() === comment.createdBy._id.toString()) { %>
                                     <a href="#" class="px-4 py-2 text-sm text-red-500 hover:text-red-700" data-action="delete" data-comment-id="<%= comment._id %>">Delete</a>  
+                                    <% } %>
                                 </div>
-                                <% } %>
                             </div>
                             <p class="mt-2 text-gray-900 dark:text-white"><%= comment.comment %></p>
 
@@ -69,26 +87,30 @@
 
         // Listen for new comments from the server
         socket.on('commentAdded', (comment) => {
-            const commentsContainer = document.querySelector('.comments-container');
-            const newComment = `
-                <div class="p-5 mt-4 ${comment.isSpam ? 'bg-red-100 dark:bg-red-900' : 'bg-gray-50 dark:bg-gray-700'} rounded-lg shadow relative" id="comment-${comment._id}">
-                    <div class="flex items-center">
-                        <img class="w-6 h-6 object-cover rounded-full" src="${comment.createdBy.profileImageUrl}" alt="Profile Image" />
-                        <p class="text-sm text-gray-500 dark:text-gray-400 ml-2">${comment.createdBy.email}</p>
-                        ${comment.createdBy._id.toString() === '<%= user?._id %>' ? `
-                        <div class="relative ml-auto flex">
-                            <a href="#" class="px-4 py-2 underline text-sm text-gray-500 hover:text-gray-800" data-action="${comment.isSpam ? 'unspam' : 'spam'}" data-comment-id="${comment._id}">${comment.isSpam ? 'Unmark as Spam' : 'Mark as Spam'}</a>
-                            <a href="#" class="px-4 py-2 text-sm text-red-500 hover:text-red-700" data-action="delete" data-comment-id="${comment._id}">Delete</a>
+            try {
+                const commentsContainer = document.querySelector('.comments-container');
+                const newComment = `
+                    <div class="p-5 mt-4 ${comment.isSpam ? 'bg-red-100 dark:bg-red-900' : 'bg-gray-50 dark:bg-gray-700'} rounded-lg shadow relative" id="comment-${comment._id}">
+                        <div class="flex items-center">
+                            <img class="w-6 h-6 object-cover rounded-full" src="${comment.createdBy.profileImageUrl}" alt="Profile Image" />
+                            <p class="text-sm text-gray-500 dark:text-gray-400 ml-2">${comment.createdBy.email}</p>
+                            <div class="relative ml-auto flex">
+                                <a href="#" class="px-4 py-2 underline text-sm text-gray-500 hover:text-gray-800" data-action="spam" data-comment-id="${comment._id}">Mark as Spam</a>
+                                ${comment.createdBy._id.toString() === '<%= user?._id %>' ? `
+                                <a href="#" class="px-4 py-2 text-sm text-red-500 hover:text-red-700" data-action="delete" data-comment-id="${comment._id}">Delete</a>
+                                ` : ''}
+                            </div>
                         </div>
-                        ` : ''}
+                        <p class="mt-2 text-gray-900 dark:text-white">${comment.comment}</p>
                     </div>
-                    <p class="mt-2 text-gray-900 dark:text-white">${comment.comment}</p>
-                </div>
-            `;
-            commentsContainer.innerHTML += newComment;
+                `;
+                commentsContainer.innerHTML += newComment;
 
-            const commentsCount = document.querySelector('.comments-container span');
-            commentsCount.innerHTML = parseInt(commentsCount.innerHTML) + 1;
+                const commentsCount = document.querySelector('.comments-container span');
+                commentsCount.innerHTML = parseInt(commentsCount.innerHTML) + 1;
+            } catch (err) {
+                console.log('Error handling new comment:', err);
+            }
         });
 
         // Handle form submission for new comments
@@ -131,12 +153,16 @@
 
         // Listen for comment deletion from the server
         socket.on('commentDeleted', (commentID) => {
-            const commentElement = document.getElementById(`comment-${commentID}`);
-            if (commentElement) {
-                commentElement.remove();
-                const commentsCount = document.querySelector('.comments-container span');
-                commentsCount.innerHTML = parseInt(commentsCount.innerHTML) - 1;
-            }
+            try {
+                const commentElement = document.getElementById(`comment-${commentID}`);
+                if (commentElement) {
+                    commentElement.remove();
+                    const commentsCount = document.querySelector('.comments-container span');
+                    commentsCount.innerHTML = parseInt(commentsCount.innerHTML) - 1;
+                }
+            } catch (err) {
+                console.log('Error handling comment deletion:', err);
+                }
         });
 
         socket.on('commentMarkedAsSpam', (commentID) => {
@@ -164,8 +190,95 @@
                 }
             }
         }
+        const image = document.querySelector('#like-btn img');
+        const likeCount = document.getElementById('like-count');
+        let liked = <%= liked %>; // Determine if the user has liked the post
+
+        // Handle like button click
+        image.addEventListener('click', function() {
+            if (liked) {
+                socket.emit('dislike', { blogID: '<%= blog._id %>', userID: '<%= user?._id %>' });
+            }else {
+                socket.emit('like', { blogID: '<%= blog._id %>', userID: '<%= user?._id %>' });
+            }
+        });
+
+        // Listen for like/dislike events from the server
+        socket.on('liked', function() {
+            try {
+                liked = true;
+                likeCount.innerHTML = parseInt(likeCount.innerHTML) + 1;
+                image.classList.remove("opacity-60");
+                image.classList.add('opacity-100');
+            }catch (err) {
+                console.log('Error handling like:', err);
+            }
+        });
+
+        socket.on('disliked', function() {
+            try{
+                liked = false;
+                likeCount.innerHTML = parseInt(likeCount.innerHTML) - 1;
+                image.classList.remove("opacity-100");
+                image.classList.add('opacity-60');
+            }catch (err) {
+                console.log('Error handling dislike:', err);
+            }
+        });
+        socket.on('updateLike', function(total) {
+            try{
+                likeCount.innerHTML = total;
+            }catch (err) {
+                console.log('Error handling updateLike:', err);
+            }
+        });
+        socket.on('error', function(err) {
+            alert(err.message);
+        })
+
+
+
+        const shareBtn = document.getElementById('share-btn');
+        shareBtn.addEventListener('click', function() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '<%= blog.title %>',
+                    text: 'Check out this blog!',
+                    url: window.location.href
+                }).catch(console.error);
+            } else {
+                alert('Your browser does not support the Web Share API.');
+            }
+        });
+
+        const startTime = Date.now();
+    
+        function sendTimeSpent() {
+            const blogID = <%- JSON.stringify(blog._id) %>; // Actual blog ID
+            const userID = <%- JSON.stringify(user?._id) %>; // Actual user ID or empty string
+            const timeSpent = Math.floor((Date.now() - startTime) / 1000); // Time in seconds
+
+            if (!userID) {
+                alert('You need to be logged in to track time spent.');
+                return;
+            }
+
+            fetch('/api/time-spent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Set the content type to JSON
+                },
+                body: JSON.stringify({ blogID, userID, timeSpent }) // Convert the data to JSON string
+            }).catch(console.error);
+        }
+
+        
+
+        // Send time spent when the page is unloaded
+        window.addEventListener('beforeunload', sendTimeSpent);
 
         });
+        
 
     </script>
     <style>

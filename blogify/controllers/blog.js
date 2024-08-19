@@ -1,13 +1,14 @@
 const { title } = require('process');
 const Blog = require('../models/blog');
 const Comment = require('../models/comment');
+const Like = require('../models/like');
 
 const fs = require('fs');
 const path = require('path');
 
 function blogAddNew(req, res) {
     res.render('addblog', {
-        title: "Blog | Add",
+        title: "Add Blog",
         user: req.user
     });
 }
@@ -77,11 +78,22 @@ async function BlogRenderByID(req, res) {
         }
 
         const comments = await Comment.find({ blogID: id }).populate('createdBy').exec();
+        const likes = await Like.find({ blogID: id });
+
+        //user liked or not
+        let liked = false;
+        let countlike = 0;
+        if (req.user) {
+            liked = likes.some((like) => like.createdBy.toString() === req.user._id.toString());
+            countlike = likes.length;
+        }
         res.render('bloginfo', {
             title: `Blog | ${blog.title}`,
             blog: blog,
             user: req.user,
-            comments: comments
+            comments: comments,
+            countlike: countlike,
+            liked: liked
         });
     } catch (err) {
         console.error('Error rendering blog by ID:', err);
@@ -91,7 +103,7 @@ async function BlogRenderByID(req, res) {
 async function renderOwnBlogs(req,res) {
     try {
         const blogs = await Blog.find({createdBy: req.user._id}).populate('createdBy').exec();
-        res.render('ownblogs', { title: 'Own Blogs', user: req.user, blogs: blogs });
+        res.render('ownblogs', { title: 'My', user: req.user, blogs: blogs });
     } catch (err) {
         console.error('Error rendering own blogs:', err);
         res.status(500).send('Internal Server Error');
