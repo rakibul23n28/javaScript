@@ -96,11 +96,15 @@ module.exports = function (server) {
     });
 
     // Handle unmarking comments as spam
-    socket.on('unmarkToSpam', async (commentID) => {
+    socket.on('unmarkToSpam', async (commentID, creator) => {
       try {
         const comment = await Comment.findById(commentID);
         if (comment) {
+          if(creator === 'creator'){
+            comment.isSpam = 0;
+          }else{
             comment.isSpam = comment.isSpam - 1;
+          }
           await comment.save();
           socket.emit('commentUnmarkedAsSpam', commentID);
         } else {

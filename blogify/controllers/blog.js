@@ -1,7 +1,8 @@
-const { title } = require('process');
+
 const Blog = require('../models/blog');
 const Comment = require('../models/comment');
 const Like = require('../models/like');
+const TimeSpent = require('../models/timeSpent');
 
 const fs = require('fs');
 const path = require('path');
@@ -103,7 +104,20 @@ async function BlogRenderByID(req, res) {
 async function renderOwnBlogs(req,res) {
     try {
         const blogs = await Blog.find({createdBy: req.user._id}).populate('createdBy').exec();
-        res.render('ownblogs', { title: 'My', user: req.user, blogs: blogs });
+        // Calculate like counts for each blog
+        const blogsWithLikes = await Promise.all(blogs.map(async (blog) => {
+            const likeCount = await Like.countDocuments({ blogID: blog._id });
+            return {
+                ...blog.toObject(),
+                likeCount
+            };
+        }));
+
+        res.render('ownblogs', { 
+            title: 'My Blogs', 
+            user: req.user, 
+            blogs: blogsWithLikes 
+        });
     } catch (err) {
         console.error('Error rendering own blogs:', err);
         res.status(500).send('Internal Server Error');
@@ -203,6 +217,10 @@ async function handleDeleteBlog(req, res) {
         const id = req.params.blogID;
 
         await Comment.deleteMany({blogID:id});
+
+        await Like.deleteMany({blogID:id});
+
+        await TimeSpent.deleteMany({blogID:id});
         
         // Find and delete the blog by its ID
         const blog = await Blog.findByIdAndDelete(id);

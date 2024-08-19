@@ -1,16 +1,26 @@
 const {Router} = require('express');
 const {redirectIfAuthenticate} = require('../middlewares/authentication')
 const Blog = require('../models/blog')
+const Like = require('../models/like')
 const router = Router();
 
 router.get("/",async (req, res) => {
     try {
-        const blogs = await Blog.find().populate('createdBy').exec();
+        const blogs = await Blog.find({createdBy: req.user._id}).populate('createdBy').exec();
+        // Calculate like counts for each blog
+        const blogsWithLikes = await Promise.all(blogs.map(async (blog) => {
+            const likeCount = await Like.countDocuments({ blogID: blog._id });
+            return {
+                ...blog.toObject(),
+                likeCount
+            };
+        }));
+
         res.render('index', { 
-          title: 'Home',
-          user: req.user,
-          blogs: blogs
-         });
+            title: 'Home', 
+            user: req.user, 
+            blogs: blogsWithLikes 
+        });
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');

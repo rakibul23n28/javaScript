@@ -13,7 +13,7 @@
     <nav class="flex flex-col gap-4 ml-5 mt-5">
         <a href="/" class="text-white hover:text-gray-300 <%= (locals.title === 'Home') ? 'bg-green-500 p-2' : '' %>">Home</a>
         <a href="/blog/add-new" class="text-white hover:text-gray-300 <%= (locals.title === 'Add Blog') ? 'bg-green-500 p-2' : '' %> ">Add Blog</a>
-        <a href="/blog/my-blogs" class="text-white hover:text-gray-300 <%= (locals.title === 'My') ? 'bg-green-500 p-2' : '' %>">My Blogs</a>
+        <a href="/blog/my-blogs" class="text-white hover:text-gray-300 <%= (locals.title === 'My Blogs') ? 'bg-green-500 p-2' : '' %>">My Blogs</a>
         <% if (locals.user) { %>
             <div class="relative">
                 <button id="profile-menu-button" class="text-white hover:text-gray-300 flex items-center">

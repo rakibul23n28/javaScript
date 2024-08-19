@@ -56,10 +56,10 @@
                                 <p class="text-sm text-gray-500 dark:text-gray-400 ml-2"><%= comment.createdBy.email %></p>
                                 <!-- Three-dot menu -->
                                 <div class=" flex relative ml-auto">
-                                    <a href="#" class="px-4 py-2 underline text-sm text-gray-500 hover:text-gray-800" data-action="spam" data-comment-id="<%= comment._id %>">
-                                    Mark as Spam</a>
-                                    <% if (user && user._id.toString() === comment.createdBy._id.toString()) { %>
-                                    <a href="#" class="px-4 py-2 text-sm text-red-500 hover:text-red-700" data-action="delete" data-comment-id="<%= comment._id %>">Delete</a>  
+                                    <button  class="px-4 py-2 underline text-sm text-gray-500 hover:text-gray-800" data-action="spam" data-comment-id="<%= comment._id %>">
+                                    Mark as Spam</button>
+                                    <% if (( user && user._id.toString() === blog.createdBy._id.toString()) || (user && user._id.toString() === comment.createdBy._id.toString()) ) { %>
+                                    <button  class="px-4 py-2 text-sm text-red-500 hover:text-red-700" data-action="delete" data-comment-id="<%= comment._id %>">Delete</button>  
                                     <% } %>
                                 </div>
                             </div>
@@ -82,6 +82,8 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+        const user = '<%= user %>'; 
+        
 
         const socket = io();
 
@@ -95,9 +97,9 @@
                             <img class="w-6 h-6 object-cover rounded-full" src="${comment.createdBy.profileImageUrl}" alt="Profile Image" />
                             <p class="text-sm text-gray-500 dark:text-gray-400 ml-2">${comment.createdBy.email}</p>
                             <div class="relative ml-auto flex">
-                                <a href="#" class="px-4 py-2 underline text-sm text-gray-500 hover:text-gray-800" data-action="spam" data-comment-id="${comment._id}">Mark as Spam</a>
+                                <button class="px-4 py-2 underline text-sm text-gray-500 hover:text-gray-800" data-action="spam" data-comment-id="${comment._id}">Mark as Spam</button>
                                 ${comment.createdBy._id.toString() === '<%= user?._id %>' ? `
-                                <a href="#" class="px-4 py-2 text-sm text-red-500 hover:text-red-700" data-action="delete" data-comment-id="${comment._id}">Delete</a>
+                                <button class="px-4 py-2 text-sm text-red-500 hover:text-red-700" data-action="delete" data-comment-id="${comment._id}">Delete</button>
                                 ` : ''}
                             </div>
                         </div>
@@ -120,8 +122,10 @@
             const comment = commentInput.value;
             const blogID = '<%= blog._id %>';
             const createdBy = '<%= user?._id %>';
-            if (!createdBy) {
-                window.location.href = '/login'; 
+            if(!user){
+                if(confirm('You need to login first!')){
+                    window.location.href = '/login';
+                }
                 return;
             }
             socket.emit('newComment', { comment, blogID, createdBy });
@@ -196,6 +200,12 @@
 
         // Handle like button click
         image.addEventListener('click', function() {
+            if(!user){
+                if(confirm('You need to login first!')){
+                    window.location.href = '/login';
+                }
+                return;
+            }
             if (liked) {
                 socket.emit('dislike', { blogID: '<%= blog._id %>', userID: '<%= user?._id %>' });
             }else {
@@ -255,13 +265,8 @@
     
         function sendTimeSpent() {
             const blogID = <%- JSON.stringify(blog._id) %>; // Actual blog ID
-            const userID = <%- JSON.stringify(user?._id) %>; // Actual user ID or empty string
+            const userID = <%- JSON.stringify(user?._id) || 'null'  %>; // Actual user ID or empty string
             const timeSpent = Math.floor((Date.now() - startTime) / 1000); // Time in seconds
-
-            if (!userID) {
-                alert('You need to be logged in to track time spent.');
-                return;
-            }
 
             fetch('/api/time-spent', {
                 method: 'POST',
