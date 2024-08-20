@@ -20,6 +20,7 @@
                     <label for="body" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Content</label>
                     <textarea id="summernote" name="content"><%= blog.body %></textarea>
                 </div>
+                <input type="text" name="tags" id="tags" hidden value="<%= blog.tags.join(',') %>">
                 <div class="mb-5">
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="coverImage">Cover Image</label>
                     <input name="coverImage" class="block w-full text-sm text-gray-900 border rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600" id="coverImage" type="file" accept="image/*">
@@ -32,6 +33,21 @@
             </form>
         </div>
         <div class="w-1/3 p-6 bg-gray-200 mt-16">
+            <div class="flex items-end justify-between">
+                <h2 class="text-lg font-semibold">Select up to 5 tags</h2>
+                <span id="tagCount" class="text-lg font-semibold text-green-500"><%= blog.tags.length %></span>
+            </div>
+            <div id="tagsContainer">
+                <% tags.forEach(tag => { %>
+                    <button 
+                        class="tag-btn 
+                        <%= blog.tags.includes(tag.name) ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black' %> 
+                        py-1 px-3 m-1" 
+                        data-tag="<%= tag.name %>">
+                        <%= tag.name %>
+                    </button>
+                <% }) %>
+            </div>
             <div class="mt-6 comments-container">
                 <h1 class="text-xl font-semibold text-red-500">After deleting comments you cannot redo that</h1>
                 <h1 class="text-xl font-semibold">(<span><%= comments.length %></span>) Comments</h1>
@@ -49,6 +65,7 @@
                 </div>
                 <% }) %>
             </div>
+
         </div>
     </div>
     <script src="/socket.io/socket.io.js"></script>
@@ -108,6 +125,7 @@
                 formData.append('title', document.getElementById('title').value);
                 formData.append('body', $('#summernote').val());
                 formData.append('subtitle', document.getElementById('subtitle').value);
+                formData.append('tags', document.getElementById('tags').value);
 
                 var coverImage = document.getElementById('coverImage').files[0];
                 if (coverImage) {
@@ -176,6 +194,32 @@
                     commentElement.classList.add('bg-gray-50', 'dark:bg-gray-700');
                 }
             }
+            const tagButtons = document.querySelectorAll('.tag-btn');
+            const hiddenTagsInput = document.getElementById('tags');
+            const tagCountSpan = document.getElementById('tagCount');
+            let selectedTags = hiddenTagsInput.value ? hiddenTagsInput.value.split(',') : [];
+
+            tagButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tag = button.getAttribute('data-tag');
+
+                    // Toggle tag selection
+                    if (selectedTags.includes(tag)) {
+                        selectedTags = selectedTags.filter(t => t !== tag);
+                        button.classList.remove('bg-blue-500', 'text-white');
+                        button.classList.add('bg-gray-300', 'text-black');
+                    } else if (selectedTags.length < 5) {
+                        selectedTags.push(tag);
+                        button.classList.remove('bg-gray-300', 'text-black');
+                        button.classList.add('bg-blue-500', 'text-white');
+                    }
+
+                    // Update hidden input and counter
+                    hiddenTagsInput.value = selectedTags.join(',');
+                    tagCountSpan.textContent = selectedTags.length;
+                });
+            });
+
         });
     </script>
     <style>

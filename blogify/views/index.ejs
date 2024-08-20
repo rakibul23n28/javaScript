@@ -47,8 +47,8 @@
               href="/blog/<%= blog._id %>"
               class="items-center py-2 font-medium text-sm text-gray-500"
             >
-              <%= blog.subTitle.split("").slice(0, 30).join(" ") %>
-              <% if (blog.subTitle.split("").length > 50) { %>
+              <%= blog.subTitle.split(" ").slice(0, 30).join(" ") %>
+              <% if (blog.subTitle.split("").length > 30) { %>
                 ... <span class="text-blue-500">Read more</span>
               <% } %>
             </a>

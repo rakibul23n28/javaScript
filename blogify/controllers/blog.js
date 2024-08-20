@@ -161,12 +161,14 @@ async function EditBlog(req,res){
             return res.status(404).send('Blog not found');
         }
         const comments = await Comment.find({ blogID: id }).populate('createdBy').exec();
+        const tags = await Tag.find({});
 
         res.render('editBlog',{
             title: 'Blog | Edit',
             user:req.user,
             blog,
-            comments
+            comments,
+            tags
         });
     }catch (err) {
         console.error('Error saving comment:', err);
@@ -180,7 +182,8 @@ async function handleEditBlog(req,res) {
 
         const id = req.params.blogID;
            
-        const { title, body, subtitle } = req.body;
+        const { title, body, subtitle,tags } = req.body;
+        const allTags = tags.split(',').map((tag) => tag.trim());
 
         const usedImages = extractImageUrls(body);
          // Delete unused images
@@ -217,6 +220,7 @@ async function handleEditBlog(req,res) {
         blog.title =title;
         blog.subTitle =subtitle;
         blog.body =body;
+        blog.tags = allTags;
 
         // Save the updated blog to the database
         await blog.save();
