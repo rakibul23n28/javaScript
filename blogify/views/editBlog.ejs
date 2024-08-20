@@ -2,208 +2,194 @@
 
 <body>
     <%- include("./partials/leftbar") %>
-    <div class="flex-1 ml-[16.6%] flex flex-row">
-    <div class="w-2/3 p-5">
-        <form id="blogForm" class="w-full" action="/blog/edit/<%= blog._id %>" method="POST" enctype="multipart/form-data">
-            <div class="flex justify-end mb-5">
-                <a href="/blog/delete/<%= blog._id %>" onclick="return confirm('Are you sure you want to delete this blog?')" class="items-end inline-block rounded-lg text-white font-bold px-8 py-2 bg-red-500 hover:bg-red-800">Delete</a>
-            </div>
-            <div class="mb-5">
-                <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
-                <input name="title" type="text" id="title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" value="<%= blog.title %>" required />
-            </div>
-            <div class="mb-5">
-                <label for="body" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Content</label>
-                <textarea id="summernote" name="content"><%- blog.body %></textarea>
-            </div>
-
-            <div class="mb-5">
-                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="coverImage">Cover Image</label>
-                <input name="coverImage" class="block w-full mb-5 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="coverImage" type="file" accept="image/*">
-                <% if (blog.coverImageURL) { %>
-                <p class="mt-2">Current cover image:</p>
-                <img src="<%= blog.coverImageURL %>" alt="Cover Image" class="max-w-xs mt-2">
-                <% } %>
-            </div>
-
-            <button type="submit" class="mt-6 w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Save Changes</button>
-
-
-        </form>
-    </div>
-    <!-- Right Sidebar -->
-    <div class="w-1/3 p-6 bg-gray-200 mt-16">
-        <div class="mt-6 comments-container">
-            <h1 class="text-xl font-semibold">(<span><%= comments.length %></span>) Comments</h1>
-            <% comments.forEach(comment => { %>
-                
-                <div class="p-5 mt-4 rounded-lg shadow relative <%= comment.isSpam !== 0? 'bg-red-100 dark:bg-red-900' : 'bg-gray-50 dark:bg-gray-700' %>" id="comment-<%= comment._id %>">
+    <div class="flex-1 ml-[16.6%] flex">
+        <div class="w-2/3 p-5">
+            <form id="blogForm" class="w-full" action="/blog/edit/<%= blog._id %>" method="POST" enctype="multipart/form-data">
+                <div class="flex justify-end mb-5">
+                    <a href="/blog/delete/<%= blog._id %>" onclick="return confirm('Are you sure you want to delete this blog?')" class="inline-block rounded-lg text-white font-bold px-8 py-2 bg-red-500 hover:bg-red-800">Delete</a>
+                </div>
+                <div class="mb-5">
+                    <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
+                    <input name="title" type="text" id="title" class="w-full p-2.5 border text-gray-900 text-sm rounded-lg" value="<%= blog.title %>" required />
+                </div>
+                <div class="mb-5">
+                    <label for="subtitle" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Subtitle</label>
+                    <textarea name="subtitle" id="subtitle" class="w-full border p-2.5 rounded-lg h-28" required ><%= blog.subTitle %></textarea>
+                </div>
+                <div class="mb-5">
+                    <label for="body" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Content</label>
+                    <textarea id="summernote" name="content"><%= blog.body %></textarea>
+                </div>
+                <div class="mb-5">
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="coverImage">Cover Image</label>
+                    <input name="coverImage" class="block w-full text-sm text-gray-900 border rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600" id="coverImage" type="file" accept="image/*">
+                    <% if (blog.coverImageURL) { %>
+                    <p class="mt-2">Current cover image:</p>
+                    <img src="<%= blog.coverImageURL %>" alt="Cover Image" class="max-w-xs mt-2">
+                    <% } %>
+                </div>
+                <button type="submit" class="mt-6 w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Save Changes</button>
+            </form>
+        </div>
+        <div class="w-1/3 p-6 bg-gray-200 mt-16">
+            <div class="mt-6 comments-container">
+                <h1 class="text-xl font-semibold text-red-500">After deleting comments you cannot redo that</h1>
+                <h1 class="text-xl font-semibold">(<span><%= comments.length %></span>) Comments</h1>
+                <% comments.forEach(comment => { %>
+                <div class="p-5 mt-4 rounded-lg shadow relative <%= comment.isSpam !== 0 ? 'bg-red-100 dark:bg-red-900' : 'bg-gray-50 dark:bg-gray-700' %>" id="comment-<%= comment._id %>">
                     <div class="flex items-center">
                         <img class="w-6 h-6 object-cover rounded-full" src="<%= comment.createdBy.profileImageUrl %>" alt="Profile Image" />
                         <p class="text-sm text-gray-500 dark:text-gray-400 ml-2"><%= comment.createdBy.email %></p>
-                        <!-- Three-dot menu -->
-                        <div class=" flex relative ml-auto">
-                            <button  class="px-4 py-2 underline text-sm text-gray-500 hover:text-gray-800"  data-action="<%= comment.isSpam !== 0? 'unspam' : '' %>" data-comment-id="<%= comment._id %>">
-                            <%= comment.isSpam !== 0? 'Unmark as Spam' : '' %></button>
-                            <button  class="px-4 py-2 text-sm text-red-500 hover:text-red-700" data-action="delete" data-comment-id="<%= comment._id %>">Delete</button>  
+                        <div class="flex relative ml-auto">
+                            <button class="px-4 py-2 underline text-sm text-gray-500 hover:text-gray-800" data-action="<%= comment.isSpam !== 0 ? 'unspam' : '' %>" data-comment-id="<%= comment._id %>"><%= comment.isSpam !== 0 ? 'Unmark as Spam' : '' %></button>
+                            <button class="px-4 py-2 text-sm text-red-500 hover:text-red-700" data-action="delete" data-comment-id="<%= comment._id %>">Delete</button>
                         </div>
                     </div>
                     <p class="mt-2 text-gray-900 dark:text-white"><%= comment.comment %></p>
-
                 </div>
-            <% }) %>
+                <% }) %>
+            </div>
         </div>
-    </div>
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        
-document.addEventListener("DOMContentLoaded", function() {
-    $('#summernote').summernote({
-        tabsize: 2,
-        height: ($(window).height() - 300),
-        fontSizes: ['8', '9', '10', '11', '12', '14', '18', '24', '36', '48', '60', '72', '96'],
-        toolbar: [
-            ['style', ['style']],
-            ['style', ['bold', 'italic', 'underline', 'clear']],
-            ['font', ['strikethrough', 'superscript', 'subscript']],
-            ['fontsize', ['fontsize']],
-            ['color', ['color']],
-            ['para', ['ul', 'ol', 'paragraph']],
-            ['height', ['height']],
-            ['insert', ['link', 'picture', 'video']],
-            ['view', ['fullscreen', 'codeview', 'help']],
-            ['table', ['table']],
-        ],
-        callbacks: {
-            onImageUpload: function(files) {
-                uploadImage(files[0]);
-            }
-        }
-    });
-    window.addEventListener('beforeunload', function() {
-        fetch('/api/cleanup', {
-            method: 'POST',
-        }).catch(error => console.error('Error during cleanup:', error));
-    });
-    function uploadImage(file) {
-        var formData = new FormData();
-        formData.append('file', file);
-
-        fetch('/api/upload/image', {
-            method: 'POST',
-            body: formData // `FormData` handles the content type automatically
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Assuming the response contains a URL to the uploaded image
-            const url = data.url;
-            if (url) {
-                // Insert the image into Summernote (assuming Summernote is available)
-                $('#summernote').summernote('insertImage', url);
-            }
-        })
-        .catch(error => {
-            console.error('Error uploading image:', error);
-        });
-    }
-
-    document.querySelector('form').addEventListener('submit', function(event) {
-        event.preventDefault();
-
-        // Create a new FormData object
-        var formData = new FormData();
-
-        // Append the title, content, and the file to the FormData object
-        formData.append('title', document.getElementById('title').value);
-        formData.append('body', $('#summernote').val());
-
-        // Append the file
-        var coverImage = document.getElementById('coverImage').files[0];
-        if (coverImage) {
-            formData.append('coverImage', coverImage);
-        }
-
-        $.ajax({
-            url: '/blog/edit/<%= blog._id %>',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                window.location.href = '/blog/<%= blog._id %>';
-            },
-            error: function(xhr, status, error) {
-                // Handle error
-                console.error('Error creating blog:', error);
-            }
-        });
-
-    });
-    const socket = io();
-
-    // Event delegation for comment actions (delete, spam, unspam)
-    document.querySelector('.comments-container').addEventListener('click', function(e) {
-        if (e.target.matches('[data-action]')) {
-            e.preventDefault();
-            const action = e.target.getAttribute('data-action');
-            const commentID = e.target.getAttribute('data-comment-id');
-
-            if (action === 'delete') {
-                if (confirm('Are you sure you want to delete this comment?')) {
-                    socket.emit('deleteComment', commentID);
+        document.addEventListener("DOMContentLoaded", function() {
+            $('#summernote').summernote({
+                tabsize: 2,
+                height: ($(window).height() - 300),
+                fontSizes: ['8', '9', '10', '11', '12', '14', '18', '24', '36', '48', '60', '72', '96'],
+                toolbar: [
+                    ['style', ['style']],
+                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                    ['font', ['strikethrough', 'superscript', 'subscript']],
+                    ['fontsize', ['fontsize']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['height', ['height']],
+                    ['insert', ['link', 'picture', 'video']],
+                    ['view', ['fullscreen', 'codeview', 'help']],
+                    ['table', ['table']],
+                ],
+                callbacks: {
+                    onImageUpload: function(files) {
+                        uploadImage(files[0]);
+                    }
                 }
-            } else if (action === 'unspam') {
-                if (confirm('Are you sure you want to unmark this comment as spam?')) {
-                    socket.emit('unmarkToSpam', commentID , 'creator');
+            });
+
+            window.addEventListener('beforeunload', function() {
+                fetch('/api/cleanup', { method: 'POST' }).catch(error => console.error('Error during cleanup:', error));
+            });
+
+            function uploadImage(file) {
+                var formData = new FormData();
+                formData.append('file', file);
+
+                fetch('/api/upload/image', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const url = data.url;
+                    if (url) {
+                        $('#summernote').summernote('insertImage', url);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error uploading image:', error);
+                });
+            }
+
+            document.querySelector('form').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                var formData = new FormData();
+                formData.append('title', document.getElementById('title').value);
+                formData.append('body', $('#summernote').val());
+                formData.append('subtitle', document.getElementById('subtitle').value);
+
+                var coverImage = document.getElementById('coverImage').files[0];
+                if (coverImage) {
+                    formData.append('coverImage', coverImage);
+                }
+
+                $.ajax({
+                    url: '/blog/edit/<%= blog._id %>',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        window.location.href = '/blog/<%= blog._id %>';
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error creating blog:', error);
+                    }
+                });
+            });
+
+            const socket = io();
+
+            document.querySelector('.comments-container').addEventListener('click', function(e) {
+                if (e.target.matches('[data-action]')) {
+                    e.preventDefault();
+                    const action = e.target.getAttribute('data-action');
+                    const commentID = e.target.getAttribute('data-comment-id');
+
+                    if (action === 'delete') {
+                        if (confirm('Are you sure you want to delete this comment?')) {
+                            socket.emit('deleteComment', commentID);
+                        }
+                    } else if (action === 'unspam') {
+                        if (confirm('Are you sure you want to unmark this comment as spam?')) {
+                            socket.emit('unmarkToSpam', commentID , 'creator');
+                        }
+                    }
+                }
+            });
+
+            socket.on('commentDeleted', (commentID) => {
+                try {
+                    const commentElement = document.getElementById(`comment-${commentID}`);
+                    if (commentElement) {
+                        commentElement.remove();
+                        const commentsCount = document.querySelector('.comments-container span');
+                        commentsCount.innerHTML = parseInt(commentsCount.innerHTML) - 1;
+                    }
+                } catch (err) {
+                    console.log('Error handling comment deletion:', err);
+                }
+            });
+
+            socket.on('commentUnmarkedAsSpam', (commentID) => {
+                toggleSpamState(commentID, false);
+            });
+
+            function toggleSpamState(commentID, isSpam) {
+                const commentElement = document.getElementById(`comment-${commentID}`);
+                if (commentElement) {
+                    const actionButton = commentElement.querySelector('[data-action]');
+                    actionButton.setAttribute('data-action', '');
+                    actionButton.innerHTML = '';
+                    commentElement.classList.remove('bg-red-100', 'dark:bg-red-900');
+                    commentElement.classList.add('bg-gray-50', 'dark:bg-gray-700');
                 }
             }
-        }
-    });
-    // Listen for comment deletion from the server
-    socket.on('commentDeleted', (commentID) => {
-        try {
-            const commentElement = document.getElementById(`comment-${commentID}`);
-            if (commentElement) {
-                commentElement.remove();
-                const commentsCount = document.querySelector('.comments-container span');
-                commentsCount.innerHTML = parseInt(commentsCount.innerHTML) - 1;
-            }
-        } catch (err) {
-            console.log('Error handling comment deletion:', err);
-            }
-    });
-    socket.on('commentUnmarkedAsSpam', (commentID) => {
-        toggleSpamState(commentID, false);
-    });
-    function toggleSpamState(commentID, isSpam) {
-        const commentElement = document.getElementById(`comment-${commentID}`);
-        if (commentElement) {
-            const actionButton = commentElement.querySelector('[data-action]');
-
-            actionButton.setAttribute('data-action', '');
-            actionButton.innerHTML = '';
-            commentElement.classList.remove('bg-red-100', 'dark:bg-red-900');
-            commentElement.classList.add('bg-gray-50', 'dark:bg-gray-700');
-            
-        }
-    }
-
-});
+        });
     </script>
     <style>
-        pre{
-            background-color: aqua;
-            background-color: hsl(210,8%,95%);
+        pre {
+            background-color: hsl(210, 8%, 95%);
             border: 1px solid #E5E5E5;
             padding: 8px;
             margin: 2px 0px;
             border-radius: 6px;
         }
-        blockquote{
+        blockquote {
             border-left: 5px solid #d6b2b2;
-            padding:  5px 20px;
-            margin: 0px 20px ;
+            padding: 5px 20px;
+            margin: 0px 20px;
             font-weight: bold;
         }
     </style>

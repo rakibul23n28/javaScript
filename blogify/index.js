@@ -11,12 +11,13 @@ const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
 
 
-const {checkForAuthentication} = require('./middlewares/authentication');
+const {checkForAuthentication,checkAuthenticate,restrictTo} = require('./middlewares/authentication');
 
 const staticRoute = require('./routes/staticRouter');
 const authenticationRoute = require('./routes/authentication');
 const blogRoute = require('./routes/blog');
 const ApiRoute = require('./routes/api');
+const AdminRoute = require('./routes/admin');
 
 
 app.use(express.json());
@@ -39,6 +40,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set("view engine", "ejs");
 app.set('views', path.join(__dirname, 'views'));
 
+
+app.use('/admin',checkAuthenticate,restrictTo('admin'), AdminRoute);
 app.use('/blog',blogRoute);
 app.use('/user', authenticationRoute);
 app.use('/api', ApiRoute);

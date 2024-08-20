@@ -3,10 +3,20 @@ const {Schema,model} = require('mongoose');
 const blogScama= new Schema({
     title:{
         type: String,
-        required: true
+        required: true,
+        trim: true
+    },
+    subTitle:{
+        type: String,
+        required: true,
+        trim: true
     },
     body :{
         type: String,
+        required: true
+    },
+    tags :{
+        type: [String],
         required: true
     },
     coverImageURL:{

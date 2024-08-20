@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const Blog = require('../models/blog');
 const TimeSpent = require("../models/timeSpent");
+const Like = require("../models/like");
 
 // Image upload route
 router.post('/upload/image', upload.single('file'), (req, res) => {
@@ -47,9 +48,20 @@ router.get('/search', async (req, res) => {
     const query = req.query.q || '';
     try {
         const blogs = await Blog.find({
-            title: { $regex: query, $options: 'i' }
+            $or: [
+                { title: { $regex: query, $options: 'i' } },
+                { tags: { $regex: query, $options: 'i' } }
+            ]
         }).populate('createdBy').exec();
-        res.json(blogs);
+        const blogsWithLikes = await Promise.all(blogs.map(async (blog) => {
+            const likeCount = await Like.countDocuments({ blogID: blog._id });
+            return {
+                ...blog.toObject(),
+                likeCount
+            };
+        }));
+        blogsWithLikes.sort((a, b) => b.likeCount - a.likeCount);
+        res.json(blogsWithLikes);
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');

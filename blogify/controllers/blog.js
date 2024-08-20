@@ -3,20 +3,25 @@ const Blog = require('../models/blog');
 const Comment = require('../models/comment');
 const Like = require('../models/like');
 const TimeSpent = require('../models/timeSpent');
+const Tag = require('../models/tag');
 
 const fs = require('fs');
 const path = require('path');
 
-function blogAddNew(req, res) {
+async function blogAddNew(req, res) {
+    const tags = await Tag.find({});
     res.render('addblog', {
         title: "Add Blog",
-        user: req.user
+        user: req.user,
+        tags,
     });
 }
-
 async function handleNewAddedBlog(req, res) {
-    const { title, body } = req.body;
+    const { title, body , tags , subtitle } = req.body;
     const imageUrl = `/uploads/${req.file?.filename}`;
+    const allTags = tags.split(',').map((tag) => tag.trim());
+    
+
 
     const usedImages = extractImageUrls(body);
 
@@ -36,6 +41,8 @@ async function handleNewAddedBlog(req, res) {
         const newBlog = await Blog.create({
             title: title,
             body: body,
+            subTitle: subtitle,
+            tags: allTags,
             createdBy: req.user._id,
             coverImageURL: imageUrl
         });
@@ -173,7 +180,7 @@ async function handleEditBlog(req,res) {
 
         const id = req.params.blogID;
            
-        const { title, body } = req.body;
+        const { title, body, subtitle } = req.body;
 
         const usedImages = extractImageUrls(body);
          // Delete unused images
@@ -194,10 +201,21 @@ async function handleEditBlog(req,res) {
         }
         // Handle cover image update if a new image is uploaded
         if (req.file) {
+            // Delete the cover image file if it exists
+            if (blog.coverImageURL) {
+                const imagePath = path.resolve(`./public${blog.coverImageURL}`);
+                
+                fs.unlink(imagePath, (err) => {
+                    if (err) {
+                        console.error('Error deleting cover image:', err);
+                    }
+                });
+            }
             blog.coverImageURL = `/uploads/${req.file.filename}`;
         }
 
         blog.title =title;
+        blog.subTitle =subtitle;
         blog.body =body;
 
         // Save the updated blog to the database
