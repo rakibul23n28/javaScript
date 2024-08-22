@@ -43,7 +43,6 @@ router.post('/upload/image', upload.single('file'), (req, res) => {
   });
   // Route for searching blogs
 router.get('/search', async (req, res) => {
-    console.log(req.query.q);
     
     const query = req.query.q || '';
     try {
@@ -72,29 +71,42 @@ router.get('/search', async (req, res) => {
   router.post('/time-spent', async (req, res) => {
     try {
         const { timeSpent, blogID, userID } = req.body;
-        
-        
-        // Find existing time spent entry for this blog and user
-        const findTimeSpent = await TimeSpent.findOne({ blogID: blogID, createdBy: userID });
-        if (findTimeSpent) {
-            // Update the existing entry
-            findTimeSpent.timeSpent += timeSpent;
-            await findTimeSpent.save();
-            return res.status(200).json({ message: 'Time spent recorded successfully' }); // Add return here
-        }
 
-        // If no existing entry, create a new one
+        const findTimeSpent = await TimeSpent.findOne({ blogID: blogID, createdBy: userID });
+
         const timeSpentEntry = new TimeSpent({ blogID: blogID, createdBy: userID, timeSpent: timeSpent });
+
         await timeSpentEntry.save();
         return res.status(200).json({ message: 'Time spent recorded successfully' }); // Add return here
 
     } catch (err) {
-        // Handle any errors
         return res.status(500).json({ error: err.message });
     }
 });
 
   
-  module.exports = router;
+// Route to get time spent for the past 7 days
+router.get('/activity/last7days/:blogID', async (req, res) => {
+    
+    try {
+        const { blogID } = req.params;
+        
+        const now = new Date();
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(now.getDate() - 7);
+
+        const timeSpentData = await TimeSpent.find({
+            blogID: blogID,
+            createdAt: {
+                $gte: sevenDaysAgo
+            }
+        }).populate('blogID').sort({ createdAt: -1 });
+
+        res.json(timeSpentData);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 module.exports = router

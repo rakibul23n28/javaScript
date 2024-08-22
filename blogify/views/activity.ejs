@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Report</title>
+</head>
+<body>
+    <h1>Activity Report for Blog ID: <%= blogID %></h1>
+    
+    <h1 id ="activity-title"></h1>
+    <ul id="activity-list"></ul>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Ensure blogID is properly quoted for string use
+            const blogID = '<%= blogID %>';
+
+            fetch(`/api/activity/last7days/${blogID}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const list = document.getElementById('activity-list');
+                    const title = document.getElementById('activity-title');
+                    title.innerHTML = `Last 7 Days: ${data.length} activity item${data.length > 1 ? 's' : ''}`;
+                    list.innerHTML = data.map(item => `
+                        <li>
+                             <strong>${new Date(item.createdAt).toLocaleDateString()}</strong>: ${formatDuration((item.timeSpent / 60).toFixed(2))}
+                        </li>
+                    `).join('');
+                })
+                .catch(error => console.error('Error fetching activity data:', error));
+        });
+
+        // Function to format time spent in minutes to days, hours, and minutes
+        function formatDuration(minutes) {
+            const days = Math.floor(minutes / 1440);
+            const hours = Math.floor((minutes % 1440) / 60);
+            const mins = minutes % 60;
+            
+            let result = '';
+            if (days > 0) {
+                result += `${days} day${days > 1 ? 's' : ''}, `;
+            }
+            if (hours > 0 || days > 0) { // Only show hours if there are days or hours
+                result += `${hours} hour${hours > 1 ? 's' : ''}, `;
+            }
+            result += `${mins} minute${mins > 1 ? 's' : ''}`;
+
+            return result;
+        }
+    </script>
+</body>
+</html>

@@ -47,7 +47,8 @@
               <%- blog.tags.map(tag => `<span class="bg-gray-200 text-gray-700 px-2 py-1 rounded-lg text-xs">#${tag}</span>`).join('') %>
           </div>
         
-          <div class="flex flex-row justify-end items-center p-2">
+          <div class="flex flex-row justify-between items-center p-2">
+            <a href="/activity/<%= blog._id %>" class="text-green-500">Activity</a>
               <a href="/blog/edit/<%= blog._id %>" class="inline-flex items-center text-red-500 font-medium text-center ">Edit</a>
           </div>
         <div

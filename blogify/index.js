@@ -18,6 +18,7 @@ const authenticationRoute = require('./routes/authentication');
 const blogRoute = require('./routes/blog');
 const ApiRoute = require('./routes/api');
 const AdminRoute = require('./routes/admin');
+const activityRouter = require('./routes/activity');
 
 
 app.use(express.json());
@@ -40,7 +41,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set("view engine", "ejs");
 app.set('views', path.join(__dirname, 'views'));
 
-
+app.use('/activity',checkAuthenticate, activityRouter);
 app.use('/admin',checkAuthenticate,restrictTo('admin'), AdminRoute);
 app.use('/blog',blogRoute);
 app.use('/user', authenticationRoute);
