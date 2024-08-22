@@ -73,9 +73,6 @@ router.get('/search', async (req, res) => {
     try {
         const { timeSpent, blogID, userID } = req.body;
         
-        if (!userID) {
-            return res.status(200).json({ message: 'Time spent recorded without user ID' });
-        }
         
         // Find existing time spent entry for this blog and user
         const findTimeSpent = await TimeSpent.findOne({ blogID: blogID, createdBy: userID });

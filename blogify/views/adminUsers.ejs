@@ -1,0 +1,49 @@
+<%- include('./partials/header') %>
+<body>
+    <%- include('./partials/leftbar') %>
+
+    <div class="ml-[16.6%] p-6">
+        <h1 class="text-2xl font-bold mb-4">Admin Users</h1>
+
+        <!-- Display All Users in a Table -->
+        <div class="overflow-x-auto mb-8">
+            <table class="min-w-full bg-white border border-gray-300">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="px-4 py-2 border">#</th>
+                        <th class="px-4 py-2 border">Profile</th>
+                        <th class="px-4 py-2 border">Email</th>
+                        <th class="px-4 py-2 border">Name</th>
+                        <th class="px-4 py-2 border">Role</th>
+                        <th class="px-4 py-2 border">Blogs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% users.forEach((user, index) => { %>
+                        <tr>
+                            <td class="px-4 py-2 border"><%= index + 1 %></td>
+                            <td class="px-4 py-2 border">
+                                <% if (user.profileImageUrl) { %>
+                                    <a href="/profile/<%= user._id %>">
+                                        <img src="<%= user.profileImageUrl %>" alt="<%= user.firstName %> <%= user.lastName %> Profile" class="w-10 h-10 rounded-full object-cover">
+                                    </a>
+                                <% } else { %>
+                                    <a href="/profile/<%= user._id %>">
+                                        <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-500">
+                                            <span class="text-xl"><%= user.firstName.charAt(0) %></span>
+                                        </div>
+                                    </a>
+                                <% } %>
+                            </td>
+                            <td class="px-4 py-2 border"><%= user.email %></td>
+                            <td class="px-4 py-2 border"><%= user.firstName %> <%= user.lastName %></td>
+                            <td class="px-4 py-2 border"><%= user.role %></td>
+                            <td class="px-4 py-2 border"><%= user.blogCount %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
