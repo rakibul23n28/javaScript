@@ -68,45 +68,77 @@ router.get('/search', async (req, res) => {
   });
 
 
-  router.post('/time-spent', async (req, res) => {
+router.post('/time-spent', async (req, res) => {
+    const { blogID, duration } = req.body;
     try {
-        const { timeSpent, blogID, userID } = req.body;
 
-        const findTimeSpent = await TimeSpent.findOne({ blogID: blogID, createdBy: userID });
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-        const timeSpentEntry = new TimeSpent({ blogID: blogID, createdBy: userID, timeSpent: timeSpent });
+        let timeSpent = await TimeSpent.findOne({ blogID });
 
-        await timeSpentEntry.save();
-        return res.status(200).json({ message: 'Time spent recorded successfully' }); // Add return here
+        if (!timeSpent) {
+            // If no entry exists, create a new one
+            timeSpent = new TimeSpent({
+                blogID,
+                timeSpent: [{ day: today, duration }],
+                totalDuration: duration,
+            });
+        } else {
 
+            const dayEntry = timeSpent.timeSpent.find(entry => entry.day.getTime() === today.getTime());
+
+            if (dayEntry) {
+                dayEntry.duration += duration;
+            } else {
+
+                timeSpent.timeSpent.push({ day: today, duration });
+            }
+
+            timeSpent.totalDuration += duration;
+        }
+
+        await timeSpent.save();
+        return res.status(200).json({ message: 'Time spent recorded successfully' });
+    }catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+    
+});
+
+  
+router.get('/activity/last7days/:blogID', async (req, res) => {
+    const { blogID } = req.params;
+
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Set time to midnight
+
+        const sevenDaysAgo = new Date(today);
+        sevenDaysAgo.setDate(today.getDate() - 7); // Get the date 7 days ago
+
+        // Find the time spent entries for the blogID in the last 7 days
+        const timeSpentEntries = await TimeSpent.findOne({
+            blogID,
+            "timeSpent.day": { $gte: sevenDaysAgo }
+        });
+
+        if (!timeSpentEntries) {
+            return res.status(200).json({ totalDuration: 0, entries: [] }); // Return 0 duration and empty entries
+        }
+
+        // Filter out only the entries from the last 7 days
+        const last7DaysData = timeSpentEntries.timeSpent.filter(entry => entry.day >= sevenDaysAgo);
+
+        // Calculate the total duration for the last 7 days
+        const totalDuration = last7DaysData.reduce((total, entry) => total + entry.duration, 0);
+
+        return res.status(200).json({ totalDuration, entries: last7DaysData });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
 });
 
-  
-// Route to get time spent for the past 7 days
-router.get('/activity/last7days/:blogID', async (req, res) => {
-    
-    try {
-        const { blogID } = req.params;
-        
-        const now = new Date();
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(now.getDate() - 7);
-
-        const timeSpentData = await TimeSpent.find({
-            blogID: blogID,
-            createdAt: {
-                $gte: sevenDaysAgo
-            }
-        }).populate('blogID').sort({ createdAt: -1 });
-
-        res.json(timeSpentData);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
 
 
 module.exports = router

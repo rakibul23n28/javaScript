@@ -85,6 +85,19 @@ async function BlogRenderByID(req, res) {
             return res.status(404).send('Blog not found');
         }
 
+        //related blogs
+        const relatedBlogs = await Blog.find({
+            _id: { $ne: blog._id },
+            tags: { $in: blog.tags } 
+        }).limit(7).populate('createdBy').exec();
+        const relatedBlogsWithLikes = await Promise.all(relatedBlogs.map(async (blog) => {
+            const likeCount = await Like.countDocuments({ blogID: blog._id });
+            return {
+                ...blog.toObject(),
+                likeCount
+            };
+        }))
+
         const comments = await Comment.find({ blogID: id }).populate('createdBy').exec();
         const likes = await Like.find({ blogID: id });
 
@@ -101,7 +114,8 @@ async function BlogRenderByID(req, res) {
             user: req.user,
             comments: comments,
             countlike: countlike,
-            liked: liked
+            liked: liked,
+            relatedBlogs: relatedBlogsWithLikes
         });
     } catch (err) {
         console.error('Error rendering blog by ID:', err);

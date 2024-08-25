@@ -60,6 +60,6 @@ mongoose.connect("mongodb://localhost:27017/blogify", {
 });
 
 // server listening
-server.listen(PORT, () => {
+server.listen(PORT,() => {
   console.log(`The app start on http://localhost:${PORT}`);
 });

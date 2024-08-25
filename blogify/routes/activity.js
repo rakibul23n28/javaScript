@@ -4,7 +4,9 @@ const router = express.Router();
 const Blog = require('../models/blog');
 
 router.get('/:blogID', async(req, res) => {
-    res.render('activity', { blogID: req.params.blogID });
+    res.render('activity', { 
+        title: 'Activity Report',
+        blogID: req.params.blogID });
 });
 
 module.exports = router;
