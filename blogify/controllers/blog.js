@@ -230,6 +230,20 @@ async function handleEditBlog(req,res) {
             }
             blog.coverImageURL = `/uploads/${req.file.filename}`;
         }
+        const imageTodelete = extractImageUrls(blog?.body);
+        
+         // Delete content images
+        if (imageTodelete) {
+            imageTodelete.forEach((imageUrl) => {
+                const filePath = path.join(__dirname, '../public', imageUrl);
+    
+                fs.unlink(filePath, (err) => {
+                    if (err) {
+                        console.error(`Failed to delete image: ${filePath}`, err);
+                    }
+                });
+            });
+        }
 
         blog.title =title;
         blog.subTitle =subtitle;
